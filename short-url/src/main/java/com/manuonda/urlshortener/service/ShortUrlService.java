@@ -8,6 +8,11 @@ import com.manuonda.urlshortener.domain.models.ShortUrlDto;
 import com.manuonda.urlshortener.repositorys.ShortUrlRepository;
 import com.manuonda.urlshortener.repositorys.UserRepository;
 import com.manuonda.urlshortener.ApplicationProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,19 +33,24 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Transactional(readOnly = true)
 public class ShortUrlService {
 
+
+    private static final Logger logger = LoggerFactory.getLogger(ShortUrlService.class);
+
     private final ShortUrlRepository shortUrlRepository;
     private final EntityMapper entityMapper;
     private final ApplicationProperties properties;
     private final UserRepository userRepository;
+    private final UrlCacheService urlCacheService;
 
     public ShortUrlService(ShortUrlRepository shortUrlRepository,
                            EntityMapper entityMapper,
                            ApplicationProperties properties,
-                           UserRepository userRepository) {
+                           UserRepository userRepository, UrlCacheService urlCacheService) {
         this.shortUrlRepository = shortUrlRepository;
         this.entityMapper = entityMapper;
         this.properties = properties;
         this.userRepository = userRepository;
+        this.urlCacheService = urlCacheService;
     }
 
 
@@ -100,26 +110,54 @@ public class ShortUrlService {
         shortUrl.setClickCount(0L);
         shortUrl.setCreatedAt(Instant.now());
         shortUrlRepository.save(shortUrl);
+
+        // Initialize click count in cache
+        if(shortUrl.getMaxClicks() > 0 ){
+            this.urlCacheService.setClickLimit(shortKey, (long) shortUrl.getMaxClicks());
+        }
+        logger.info("Created short URL: {} -> {}", shortKey, cmd.originalUrl());
+
         return entityMapper.toShortUrlDto(shortUrl);
     }
 
+
+    @Cacheable(value="SHOR_URL_CACHE", key="#shortKey")
+    public ShortUrl getShortUrlFromCache(String shortKey){
+        return shortUrlRepository.findByShortKey(shortKey).orElse(null);
+    }
     @Transactional
     public Optional<ShortUrlDto> accessShortUrl(String shortKey, Long userId) {
-        Optional<ShortUrl> shortUrlOptional = shortUrlRepository.findByShortKey(shortKey);
-        if(shortUrlOptional.isEmpty()) {
+
+        // Get from cache and db
+        ShortUrl shortUrl = getShortUrlFromCache(shortKey);
+        if (shortUrl == null) {
             return Optional.empty();
         }
-        ShortUrl shortUrl = shortUrlOptional.get();
+
+
+        // validate expiration
         if(shortUrl.getExpiresAt() != null && shortUrl.getExpiresAt().isBefore(Instant.now())) {
             return Optional.empty();
         }
+        // validate private
         if(shortUrl.getIsPrivate() != null && shortUrl.getIsPrivate()
                 && shortUrl.getCreatedBy() != null
                 && !Objects.equals(shortUrl.getCreatedBy().getId(), userId)) {
             return Optional.empty();
         }
-        shortUrl.setClickCount(shortUrl.getClickCount()+1);
-        shortUrlRepository.save(shortUrl);
+
+        if(this.urlCacheService.isClickLimitExceeded(shortUrl.getShortKey())){
+            return Optional.empty();
+        }
+
+        urlCacheService.incrementClickCount(shortKey);
+
+        if(shortUrl.getMaxClicks() > 0){
+            this.urlCacheService.setClickLimit(shortKey, (long) shortUrl.getMaxClicks());
+        }
+
+        //shortUrl.setClickCount(shortUrl.getClickCount()+1);
+        //shortUrlRepository.save(shortUrl);
         return shortUrlOptional.map(entityMapper::toShortUrlDto);
     }
 
@@ -129,5 +167,10 @@ public class ShortUrlService {
             shortKey = generateRandomShortKey();
         } while (shortUrlRepository.existsByShortKey(shortKey));
         return shortKey;
+    }
+
+    public long countTotalClicks(String shortUrl){
+
+        return 0;
     }
 }

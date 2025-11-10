@@ -1,6 +1,5 @@
 # Spring Boot URL Shortener
-
-A production-ready URL shortening service built with Spring Boot, featuring user authentication, analytics, caching, and a modern web interface.
+A URL shortener converts long links into short, memorable versions. When someone visits the short URL, the system automatically redirects to the original destination, making it easier to share links on social media and messaging.
 
 ## Overview
 
