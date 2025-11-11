@@ -10,6 +10,7 @@ public record CreateShortUrlForm(
         Boolean isPrivate,
         @Min(1)
         @Max(365)
-        Integer expirationInDays
+        Integer expirationInDays,
+        Integer maxClicks
 ) {
 }

@@ -10,8 +10,6 @@ import com.manuonda.urlshortener.repositorys.UserRepository;
 import com.manuonda.urlshortener.ApplicationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,9 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.InvalidUrlException;
-
-import javax.swing.text.html.Option;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -110,6 +105,7 @@ public class ShortUrlService {
         }
         shortUrl.setClickCount(0L);
         shortUrl.setCreatedAt(Instant.now());
+        shortUrl.setMaxClicks(cmd.maxClicks());
         shortUrlRepository.save(shortUrl);
 
         // Initialize click count in cache
@@ -147,18 +143,18 @@ public class ShortUrlService {
             return Optional.empty();
         }
 
-        if(this.urlCacheService.isClickLimitExceeded(shortUrl.getShortKey())){
+
+        long currentClicks = urlCacheService.getClickCount(shortKey);
+        long maxClicks = shortUrl.getMaxClicks();
+
+        // Validate click limit BEFORE incrementing
+        if (maxClicks > 0 && currentClicks >= maxClicks) {
             return Optional.empty();
         }
 
-        urlCacheService.incrementClickCount(shortKey);
+        // Increment click count
+        urlCacheService.incrementAndGetClickCount(shortKey);
 
-        if(shortUrl.getMaxClicks() > 0){
-            this.urlCacheService.setClickLimit(shortKey, (long) shortUrl.getMaxClicks());
-        }
-
-        //shortUrl.setClickCount(shortUrl.getClickCount()+1);
-        //shortUrlRepository.save(shortUrl);
         return Optional.of(entityMapper.toShortUrlDto(shortUrl));
     }
 

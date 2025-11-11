@@ -133,10 +133,10 @@ public class UrlCacheService {
             int syncCount = 0;
             for (String key : keys) {
                 String shortKey = key.substring(CLICKS_PREFIX.length());
-                String clicksStr = redisTemplate.opsForValue().get(key);
+                Object clicksStr = redisTemplate.opsForValue().get(key);
 
                 if (clicksStr != null) {
-                    long clicksInRedis = Long.parseLong(clicksStr);
+                    long clicksInRedis =  Long.parseLong(clicksStr.toString());
 
                     shortUrlRepository.findByShortKey(shortKey).ifPresent(shortUrl -> {
                         if (clicksInRedis > shortUrl.getClickCount()) {
@@ -155,7 +155,15 @@ public class UrlCacheService {
         }
     }
 
-
-
-
+    /**
+     * Increments the click count for a given short URL.
+     * @param shortKey
+     */
+    public void incrementClickCount(String shortKey) {
+        long newClickCount = incrementAndGetClickCount(shortKey);
+        long maxClicks = getClickLimit(shortKey);
+        if (isClickLimitExceeded(shortKey, newClickCount, maxClicks)) {
+            logger.warn("Click limit exceeded for shortKey {}: {}/{}", shortKey, newClickCount, maxClicks);
+        }
+      }
 }

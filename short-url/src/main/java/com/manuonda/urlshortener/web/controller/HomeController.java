@@ -43,7 +43,7 @@ public class HomeController {
         this.addShortUrlsDataToModel(model, page);
         model.addAttribute("paginationUrl", "/");
         model.addAttribute("createShortUrlForm",
-                new CreateShortUrlForm("", false, null));
+                new CreateShortUrlForm("", false, null,0));
         return "index";
     }
 
@@ -70,7 +70,8 @@ public class HomeController {
                     form.originalUrl(),
                     form.isPrivate(),
                     form.expirationInDays(),
-                    userId
+                    userId,
+                    form.maxClicks()
             );
             var shortUrlDto = shortUrlService.createShortUrl(cmd);
             redirectAttributes.addFlashAttribute("successMessage", "Short URL created successfully "+
