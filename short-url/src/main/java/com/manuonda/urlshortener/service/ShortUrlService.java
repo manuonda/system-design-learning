@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.InvalidUrlException;
 
+import javax.swing.text.html.Option;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -158,7 +159,7 @@ public class ShortUrlService {
 
         //shortUrl.setClickCount(shortUrl.getClickCount()+1);
         //shortUrlRepository.save(shortUrl);
-        return shortUrlOptional.map(entityMapper::toShortUrlDto);
+        return Optional.of(entityMapper.toShortUrlDto(shortUrl));
     }
 
     private String generateUniqueShortKey() {

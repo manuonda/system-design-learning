@@ -22,7 +22,8 @@ public class EntityMapper {
                 shortUrl.getExpiresAt(),
                 userDto,
                 shortUrl.getClickCount(),
-                shortUrl.getCreatedAt()
+                shortUrl.getCreatedAt(),
+                shortUrl.getMaxClicks()
         );
     }
 
