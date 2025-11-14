@@ -4,13 +4,14 @@ package com.manuonda.urlshortener.service;
 import com.manuonda.urlshortener.domain.entities.ShortUrl;
 import com.manuonda.urlshortener.domain.models.CreateShortUrlCmd;
 import com.manuonda.urlshortener.domain.models.PagedResult;
+import com.manuonda.urlshortener.domain.models.ShortUrlCacheDto;
 import com.manuonda.urlshortener.domain.models.ShortUrlDto;
+import com.manuonda.urlshortener.domain.models.UserDto;
 import com.manuonda.urlshortener.repositorys.ShortUrlRepository;
 import com.manuonda.urlshortener.repositorys.UserRepository;
 import com.manuonda.urlshortener.ApplicationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -118,44 +119,83 @@ public class ShortUrlService {
     }
 
 
-    @Cacheable(value="SHOR_URL_CACHE", key="#shortKey")
-    public ShortUrl getShortUrlFromCache(String shortKey){
-        return shortUrlRepository.findByShortKey(shortKey).orElse(null);
-    }
     @Transactional
     public Optional<ShortUrlDto> accessShortUrl(String shortKey, Long userId) {
 
-        // Get from cache and db
-        ShortUrl shortUrl = getShortUrlFromCache(shortKey);
-        if (shortUrl == null) {
+        // Try to get from cache first
+        ShortUrlCacheDto cacheDto = this.urlCacheService.getShortUrlFromCache(shortKey);
+        ShortUrlDto shortUrlDto;
+
+        if (cacheDto != null) {
+            // Cache hit - convert cache DTO to full DTO
+            logger.info("Using cached ShortUrl for shortKey: {}", shortKey);
+            shortUrlDto = convertCacheDtoToDto(cacheDto);
+        } else {
+            // Cache miss - fetch from DB
+            Optional<ShortUrl> shortUrlOpt = shortUrlRepository.findByShortKey(shortKey);
+            if (shortUrlOpt.isEmpty()) {
+                return Optional.empty();
+            }
+            ShortUrl shortUrl = shortUrlOpt.get();
+            shortUrlDto = entityMapper.toShortUrlDto(shortUrl);
+
+            // Store minimal DTO in cache for next time
+            ShortUrlCacheDto cacheDtoToStore = entityMapper.toShortUrlCacheDto(shortUrl);
+            this.urlCacheService.cacheShortUrl(shortKey, cacheDtoToStore);
+        }
+
+        // Validate expiration
+        if(shortUrlDto.expiresAt() != null && shortUrlDto.expiresAt().isBefore(Instant.now())) {
             return Optional.empty();
         }
 
-
-        // validate expiration
-        if(shortUrl.getExpiresAt() != null && shortUrl.getExpiresAt().isBefore(Instant.now())) {
-            return Optional.empty();
-        }
-        // validate private
-        if(shortUrl.getIsPrivate() != null && shortUrl.getIsPrivate()
-                && shortUrl.getCreatedBy() != null
-                && !Objects.equals(shortUrl.getCreatedBy().getId(), userId)) {
+        // Validate private
+        if(shortUrlDto.isPrivate() != null && shortUrlDto.isPrivate()
+                && shortUrlDto.createdBy() != null
+                && !Objects.equals(shortUrlDto.createdBy().id(), userId)) {
             return Optional.empty();
         }
 
-
+        // Validate click limit
         long currentClicks = urlCacheService.getClickCount(shortKey);
-        long maxClicks = shortUrl.getMaxClicks();
+        long maxClicks = shortUrlDto.maxClicks() != null ? shortUrlDto.maxClicks() : 0;
 
         // Validate click limit BEFORE incrementing
         if (maxClicks > 0 && currentClicks >= maxClicks) {
+            this.urlCacheService.invalidateShortUrlCache(shortUrlDto.shortKey());
             return Optional.empty();
         }
 
         // Increment click count
         urlCacheService.incrementAndGetClickCount(shortKey);
 
-        return Optional.of(entityMapper.toShortUrlDto(shortUrl));
+        return Optional.of(shortUrlDto);
+    }
+
+    /**
+     * Helper method to convert ShortUrlCacheDto to ShortUrlDto
+     * Note: createdBy will be null (only ID is cached)
+     * createdAt is not cached (not needed for access logic)
+     */
+    private ShortUrlDto convertCacheDtoToDto(ShortUrlCacheDto cacheDto) {
+        // Reconstruct a minimal UserDto if createdById exists
+        UserDto userDto = null;
+        if (cacheDto.createdById() != null) {
+            // Create a minimal UserDto with only the ID (name is not cached)
+            userDto = new UserDto(cacheDto.createdById(), null);
+        }
+
+        return new ShortUrlDto(
+                cacheDto.id(),
+                cacheDto.shortKey(),
+                cacheDto.originalUrl(),
+                cacheDto.isPrivate(),
+                cacheDto.expiresAt(),
+                userDto,  // UserDto with ID only
+                cacheDto.clickCount(),
+                null,     // createdAt not cached (not used in validation)
+                cacheDto.maxClicks()
+        );
     }
 
     private String generateUniqueShortKey() {
@@ -166,8 +206,4 @@ public class ShortUrlService {
         return shortKey;
     }
 
-    public long countTotalClicks(String shortUrl){
-
-        return 0;
-    }
 }

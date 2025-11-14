@@ -5,6 +5,6 @@ public record CreateShortUrlCmd(
         Boolean isPrivate,
         Integer expirationInDays,
         Long userId,
-        int maxClicks
+        Integer maxClicks
 ) {
 }

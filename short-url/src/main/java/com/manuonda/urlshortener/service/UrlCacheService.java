@@ -1,5 +1,6 @@
 package com.manuonda.urlshortener.service;
 
+import com.manuonda.urlshortener.domain.models.ShortUrlCacheDto;
 import com.manuonda.urlshortener.repositorys.ShortUrlRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ public class UrlCacheService {
     private static final Logger logger = LoggerFactory.getLogger(UrlCacheService.class);
     private static final String CLICKS_PREFIX = "clicks:";
     private static final String LIMIT_PREFIX = "limit:";
+    private static final String SHORT_URL_PREFIX = "shorturl:";
+
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final ShortUrlRepository shortUrlRepository;
@@ -166,4 +169,64 @@ public class UrlCacheService {
             logger.warn("Click limit exceeded for shortKey {}: {}/{}", shortKey, newClickCount, maxClicks);
         }
       }
+
+    /**
+     * Get ShortUrl DTO from cache
+     * @param shortKey
+     * @return ShortUrlCacheDto if found in cache, null otherwise
+     */
+    public ShortUrlCacheDto getShortUrlFromCache(String shortKey){
+        try{
+            Object object = this.redisTemplate.opsForValue().get(SHORT_URL_PREFIX + shortKey);
+            if(Objects.nonNull(object)){
+                logger.debug("Object found in cache, type: {}", object.getClass().getSimpleName());
+                if(object instanceof ShortUrlCacheDto){
+                    logger.info("Cache HIT for shortKey: {}", shortKey);
+                    return (ShortUrlCacheDto) object;
+                } else {
+                    logger.warn("Cache object is not ShortUrlCacheDto, type is: {}", object.getClass().getName());
+                    return null;
+                }
+            } else {
+                logger.info("Cache MISS for shortKey: {} (object is null)", shortKey);
+                return null;
+            }
+        }catch (Exception e){
+            logger.error("Exception getting ShortUrl from cache for shortKey {}", shortKey, e);
+            return null;
+        }
+    }
+
+    /**
+     * Invalidate the cache for a short URL
+     * @param shortKey
+     */
+    public void invalidateShortUrlCache(String shortKey){
+        try{
+            logger.info("Invalidating ShortUrl cache for shortKey {}", shortKey);
+            redisTemplate.delete(SHORT_URL_PREFIX + shortKey);
+        }catch (Exception e){
+            logger.error("Error invalidating ShortUrl cache for shortKey {}", shortKey, e);
+        }
+    }
+
+    /**
+     * Cache ShortUrl DTO (minimal DTO without problematic fields)
+     * @param shortKey
+     * @param cacheDto ShortUrlCacheDto (not the full ShortUrlDto)
+     */
+    public void cacheShortUrl(String shortKey, ShortUrlCacheDto cacheDto) {
+        try{
+            logger.info("Attempting to cache ShortUrlCacheDto for shortKey: {}", shortKey);
+            if(cacheDto == null) {
+                logger.warn("cacheDto is null, will not cache");
+                return;
+            }
+            redisTemplate.opsForValue().set(SHORT_URL_PREFIX + shortKey, cacheDto, 1, TimeUnit.HOURS);
+            logger.info("Successfully cached ShortUrlCacheDto for shortKey: {} (TTL: 1 hour)", shortKey);
+        }catch (Exception e){
+            logger.error("Exception caching ShortUrlCacheDto for shortKey: {}", shortKey, e);
+            logger.error("Exception details: ", e);
+        }
+    }
 }

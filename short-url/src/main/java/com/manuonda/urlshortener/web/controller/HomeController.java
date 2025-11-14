@@ -71,7 +71,7 @@ public class HomeController {
                     form.isPrivate(),
                     form.expirationInDays(),
                     userId,
-                    form.maxClicks()
+                    form.maxClicks() != null ? form.maxClicks() : 0
             );
             var shortUrlDto = shortUrlService.createShortUrl(cmd);
             redirectAttributes.addFlashAttribute("successMessage", "Short URL created successfully "+

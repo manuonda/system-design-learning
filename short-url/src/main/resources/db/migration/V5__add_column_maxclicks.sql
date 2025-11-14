@@ -1,1 +1,1 @@
-ALTER TABLE short_urls ADD COLUMN max_clicks INT;
+ALTER TABLE short_urls ADD COLUMN max_clicks INT DEFAULT 0;

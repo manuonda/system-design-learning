@@ -40,7 +40,7 @@ public class ShortUrl {
     private Instant createdAt;
 
     @Column(name="max_clicks")
-    private int maxClicks;
+    private Integer maxClicks;
 
 
     public Long getId() {
@@ -115,11 +115,11 @@ public class ShortUrl {
         this.createdBy = createdBy;
     }
 
-    public int getMaxClicks() {
+    public Integer getMaxClicks() {
         return maxClicks;
     }
 
-    public void setMaxClicks(int maxClicks) {
+    public void setMaxClicks(Integer maxClicks) {
         this.maxClicks = maxClicks;
     }
 }
