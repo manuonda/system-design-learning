@@ -1,6 +1,8 @@
 # System Design Learning
 
-**[🇪🇸 Español](README.sp.md)** | **🇺🇸 English**
+**[🌎 Spanish](README.es.md)** | **🇺🇸 English**ystem Design Learning
+
+**[� Español](README.es.md)** | **🇺🇸 English**
 
 A comprehensive repository for learning system design concepts through practical implementations and real-world examples.
 
@@ -21,30 +23,13 @@ System design is the process of defining the architecture, components, modules, 
 - **Database Design**: Choosing appropriate data storage solutions
 - **Microservices**: Breaking down monolithic applications into smaller services
 
-## Projects Index
-
-### 1. URL Shortener Service 🔗
-**Technology Stack**: Spring Boot, Redis, PostgreSQL, Docker  
-**Concepts Covered**: Caching strategies, Database design, Authentication, Performance optimization  
-
-A complete URL shortening service demonstrating enterprise-level system design patterns including:
-- Cache-aside pattern with Redis
-- Role-based access control
-- Click tracking and analytics
-- Database migrations
-- Docker containerization
-
-**[📖 View Project](./short-url/README.md)**
-
----
-
 ## Learning Path
 
 ### 1. URL Shortener
 **Technology Stack**: Spring Boot, Redis, PostgreSQL, Docker  
 **Concepts Covered**: Caching strategies, Database design, Authentication, Performance optimization  
 
-**[📖 English Documentation](./short-url/README.md)** | **[📖 Documentación en Español](./short-url/README.sp.md)**
+**[📖 English Documentation](./short-url/README.md)** | **[📖 Documentation in Spanish](./short-url/README.es.md)**
 
 ## Resources
 
