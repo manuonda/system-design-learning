@@ -104,6 +104,8 @@ graph TB
 - ✅ Panel de usuario con analíticas de URLs
 - ✅ Control de acceso basado en roles (Usuario/Admin)
 - ✅ Caché Redis para rendimiento
+- ✅ Límite de clics por URL con aplicación automática
+- ✅ Sincronización de conteo de clics (Redis → Base de Datos cada 5 minutos)
 - ✅ Migraciones de base de datos con Flyway
 - ✅ Validación de entrada y seguridad
 
@@ -162,6 +164,130 @@ PostgreSQL y Redis se configuran automáticamente via `docker-compose.yml`
 | GET | `/api/urls/{shortCode}` | Redirigir a URL original |
 | GET | `/my-urls` | Panel de URLs del usuario |
 | GET | `/admin` | Panel de administración |
+
+## Imagen de Arquitectura
+
+![Arquitectura del Acortador de URLs en Spring Boot](./shorturl.png)
+
+Este diagrama ilustra la interacción entre la aplicación Spring Boot, el caché Redis y la base de datos PostgreSQL en el sistema de acortamiento de URLs.
+
+## Caché Redis y Gestión de Clics
+
+### Estrategia de Caché
+
+La aplicación implementa un patrón **Cache-Aside** con serialización Jackson para Redis:
+
+```mermaid
+graph LR
+    A["Solicitud de Usuario<br/>/s/abc123"] -->|1. Verificar Caché| B["Caché Redis"]
+    B -->|Cache Hit| D["Devolver Datos en Caché<br/>ShortUrlCacheDto"]
+    B -->|Cache Miss| C["Consultar BD"]
+    C -->|2. Obtener Datos| E["PostgreSQL"]
+    E -->|3. Devolver Entidad| F["Mapear a DTO"]
+    F -->|4. Guardar en Caché<br/>TTL: 1 hora| B
+    F -->|5. Devolver Respuesta| G["Usuario Obtiene URL"]
+    D -->|Respuesta Directa| G
+```
+
+### Características Clave
+
+#### 1. **ShortUrlCacheDto - DTO Mínimo para Caché**
+- **Propósito**: Almacenar solo datos esenciales en Redis sin objetos relacionales
+- **Campos**: `id`, `shortKey`, `originalUrl`, `isPrivate`, `expiresAt`, `createdById`, `clickCount`, `maxClicks`
+- **Beneficios**:
+  - Sin problemas de serialización de proxies Hibernate
+  - Menor huella de memoria en Redis
+  - Serialización/deserialización más rápida
+  - Type-safe con anotación `@JsonTypeInfo`
+
+#### 2. **Serialización Jackson con Información de Tipo**
+```java
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.CLASS,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "@class"
+)
+public record ShortUrlCacheDto(...)
+```
+- Asegura deserialización adecuada de `LinkedHashMap` a `ShortUrlCacheDto`
+- Almacena metadatos de tipo en JSON de Redis para consistencia
+
+#### 3. **Sistema de Conteo de Clics**
+
+Dos estructuras de datos Redis separadas:
+- **Conteo de Clics**: `clicks:{shortKey}` → Almacena clics totales (se incrementa por acceso)
+- **Límite de Clics**: `limit:{shortKey}` → Almacena máximo de clics permitidos
+
+```mermaid
+graph TD
+    A["Usuario accede a /s/abc123"] -->|Incrementar| B["clicks:abc123 en Redis"]
+    B -->|Obtener Actual| C["clicksActuales = 5"]
+    C -->|Comparar con| D["limit:abc123 = 10"]
+    D -->|5 < 10?| E{Verificar Límite}
+    E -->|Sí| F["Permitir Acceso"]
+    E -->|No| G["Bloquear y Devolver 404"]
+    F -->|Cada 5 min| H["Sincronizar con BD"]
+```
+
+#### 4. **Sincronización Automática de Clics**
+
+Tarea programada cada 5 minutos:
+
+```java
+@Scheduled(fixedRate = 5, timeUnit = TimeUnit.MINUTES)
+public void synchronizeClicksToDatabase()
+```
+
+- Lee conteos de clics de Redis (`clicks:*` keys)
+- Compara con valores en base de datos
+- Actualiza BD solo si el conteo de Redis es mayor
+- Previene pérdida de datos si Redis se reinicia
+- Reduce frecuencia de escrituras en BD
+
+**Beneficios:**
+- ⚡ Conteo de clics en tiempo real en Redis (rápido)
+- 💾 Almacenamiento persistente en PostgreSQL (confiable)
+- 🔄 Sincronización automática en background
+- 📊 Sin pérdida de datos en reinicio de caché
+
+### Configuración
+
+```properties
+# Conexión Redis
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+
+# TTL de Caché (en milisegundos)
+spring.cache.redis.time-to-live=3600000  # 1 hora para datos de URL
+
+# Tarea de sincronización programada (en código de aplicación)
+# @Scheduled(fixedRate = 5, timeUnit = TimeUnit.MINUTES)
+```
+
+### Ejemplo de Uso
+
+```java
+// Primer acceso - Cache MISS
+ShortUrlCacheDto cached = urlCacheService.getShortUrlFromCache("abc123");  // null
+ShortUrl entity = repository.findByShortKey("abc123");
+ShortUrlCacheDto cacheDto = mapper.toShortUrlCacheDto(entity);
+urlCacheService.cacheShortUrl("abc123", cacheDto);  // Guardar en Redis (1 hora TTL)
+
+// Segundo acceso - Cache HIT
+ShortUrlCacheDto cached = urlCacheService.getShortUrlFromCache("abc123");  // ✓ desde Redis
+// Sin consulta a base de datos
+
+// Incrementar clics
+long nuevosClics = urlCacheService.incrementAndGetClickCount("abc123");  // 1
+// Verificar contra límite
+long maxClics = urlCacheService.getClickLimit("abc123");  // 100
+if (nuevosClics > maxClics) {
+    // URL ha excedido su límite de clics
+}
+
+// Cada 5 minutos (automático)
+urlCacheService.synchronizeClicksToDatabase();  // Tarea de sincronización en background
+```
 
 ## Consideraciones de Diseño del Sistema
 

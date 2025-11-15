@@ -103,6 +103,8 @@ graph TB
 - ✅ User dashboard with URL analytics
 - ✅ Role-based access control (User/Admin)
 - ✅ Redis caching for performance
+- ✅ Click limit per URL with automatic enforcement
+- ✅ Click count synchronization (Redis → Database every 5 minutes)
 - ✅ Database migrations with Flyway
 - ✅ Input validation and security
 
@@ -161,6 +163,130 @@ PostgreSQL and Redis are automatically configured via `docker-compose.yml`
 | GET | `/api/urls/{shortCode}` | Redirect to original URL |
 | GET | `/my-urls` | User's URLs dashboard |
 | GET | `/admin` | Admin dashboard |
+
+## Architecture Image
+
+![Spring Boot URL Shortener Architecture](./shorturl.png)
+
+This diagram illustrates the interaction between the Spring Boot application, Redis cache, and PostgreSQL database in the URL shortening system.
+
+## Redis Caching & Click Management
+
+### Caching Strategy
+
+The application implements a **Cache-Aside pattern** with Jackson serialization for Redis:
+
+```mermaid
+graph LR
+    A["User Request<br/>/s/abc123"] -->|1. Check Cache| B["Redis Cache"]
+    B -->|Cache Hit| D["Return Cached Data<br/>ShortUrlCacheDto"]
+    B -->|Cache Miss| C["Query Database"]
+    C -->|2. Get Data| E["PostgreSQL"]
+    E -->|3. Return Entity| F["Map to DTO"]
+    F -->|4. Store in Cache<br/>TTL: 1 hour| B
+    F -->|5. Return Response| G["User Gets URL"]
+    D -->|Direct Response| G
+```
+
+### Key Features
+
+#### 1. **ShortUrlCacheDto - Minimal Cache DTO**
+- **Purpose**: Store only essential data in Redis without relational objects
+- **Fields**: `id`, `shortKey`, `originalUrl`, `isPrivate`, `expiresAt`, `createdById`, `clickCount`, `maxClicks`
+- **Benefits**:
+  - No Hibernate proxy serialization issues
+  - Smaller Redis memory footprint
+  - Faster serialization/deserialization
+  - Type-safe with `@JsonTypeInfo` annotation
+
+#### 2. **Jackson Serialization with Type Information**
+```java
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.CLASS,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "@class"
+)
+public record ShortUrlCacheDto(...)
+```
+- Ensures proper deserialization from `LinkedHashMap` to `ShortUrlCacheDto`
+- Stores type metadata in Redis JSON for consistency
+
+#### 3. **Click Counting System**
+
+Two separate Redis data structures:
+- **Click Count**: `clicks:{shortKey}` → Stores total clicks (incremented per access)
+- **Click Limit**: `limit:{shortKey}` → Stores max allowed clicks
+
+```mermaid
+graph TD
+    A["User accesses /s/abc123"] -->|Increment| B["clicks:abc123 in Redis"]
+    B -->|Get Current| C["currentClicks = 5"]
+    C -->|Compare with| D["limit:abc123 = 10"]
+    D -->|5 < 10?| E{Check Limit}
+    E -->|Yes| F["Allow Access"]
+    E -->|No| G["Block & Return 404"]
+    F -->|Every 5 min| H["Sync to Database"]
+```
+
+#### 4. **Automatic Click Synchronization**
+
+Scheduled task runs every 5 minutes:
+
+```java
+@Scheduled(fixedRate = 5, timeUnit = TimeUnit.MINUTES)
+public void synchronizeClicksToDatabase()
+```
+
+- Reads click counts from Redis (`clicks:*` keys)
+- Compares with database values
+- Updates database only if Redis count is higher
+- Prevents data loss if Redis restarts
+- Reduces database write frequency
+
+**Benefits:**
+- ⚡ Real-time click counting in Redis (fast)
+- 💾 Persistent storage in PostgreSQL (reliable)
+- 🔄 Automatic background synchronization
+- 📊 No lost data on cache restart
+
+### Configuration
+
+```properties
+# Redis Connection
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+
+# Cache TTL (in milliseconds)
+spring.cache.redis.time-to-live=3600000  # 1 hour for URL data
+
+# Scheduled sync task (in application code)
+# @Scheduled(fixedRate = 5, timeUnit = TimeUnit.MINUTES)
+```
+
+### Usage Example
+
+```java
+// First access - Cache MISS
+ShortUrlCacheDto cached = urlCacheService.getShortUrlFromCache("abc123");  // null
+ShortUrl entity = repository.findByShortKey("abc123");
+ShortUrlCacheDto cacheDto = mapper.toShortUrlCacheDto(entity);
+urlCacheService.cacheShortUrl("abc123", cacheDto);  // Store in Redis (1 hour TTL)
+
+// Second access - Cache HIT
+ShortUrlCacheDto cached = urlCacheService.getShortUrlFromCache("abc123");  // ✓ from Redis
+// No database query needed
+
+// Click increment
+long newClicks = urlCacheService.incrementAndGetClickCount("abc123");  // 1
+// Check against limit
+long maxClicks = urlCacheService.getClickLimit("abc123");  // 100
+if (newClicks > maxClicks) {
+    // URL has exceeded its click limit
+}
+
+// Every 5 minutes (automatic)
+urlCacheService.synchronizeClicksToDatabase();  // Background sync task
+```
 
 ## System Design Considerations
 

@@ -1,5 +1,6 @@
 package com.manuonda.urlshortener.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.manuonda.urlshortener.domain.models.ShortUrlCacheDto;
 import com.manuonda.urlshortener.repositorys.ShortUrlRepository;
 import org.slf4j.Logger;
@@ -180,13 +181,8 @@ public class UrlCacheService {
             Object object = this.redisTemplate.opsForValue().get(SHORT_URL_PREFIX + shortKey);
             if(Objects.nonNull(object)){
                 logger.debug("Object found in cache, type: {}", object.getClass().getSimpleName());
-                if(object instanceof ShortUrlCacheDto){
-                    logger.info("Cache HIT for shortKey: {}", shortKey);
-                    return (ShortUrlCacheDto) object;
-                } else {
-                    logger.warn("Cache object is not ShortUrlCacheDto, type is: {}", object.getClass().getName());
-                    return null;
-                }
+                ObjectMapper objectMapper = new ObjectMapper();
+                return objectMapper.convertValue(object, ShortUrlCacheDto.class);
             } else {
                 logger.info("Cache MISS for shortKey: {} (object is null)", shortKey);
                 return null;

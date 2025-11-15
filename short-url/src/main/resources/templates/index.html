@@ -43,6 +43,12 @@
                     <input type="checkbox" class="form-check-input" id="isPrivate" th:field="*{isPrivate}">
                     <label class="form-check-label" for="isPrivate">Private (only you can access)</label>
                 </div>
+                <div class="mb-3" sec:authorize="isAuthenticated()">
+                    <label for="expirationInDays" class="form-label">Max clicks</label>
+                    <input type="number" class="form-control" id="maxClicks"
+                           th:field="*{maxClicks}"
+                           min="1" />
+                </div>
 
                 <button type="submit" class="btn btn-primary">Shorten URL</button>
             </form>
