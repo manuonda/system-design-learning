@@ -1,5 +1,6 @@
 package domain
 
+import ReservationStatus
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.LocalDateTime
@@ -38,7 +39,6 @@ class StorageSpaceReservation(
       startTime: LocalDateTime,
       endTime: LocalDateTime,
       availableSpaces: List<ParkingSpace>,
-      vehiclePlate: String? = null,
       vehicle: Vehicle,
   ):String{
    //Validar datos si son correctos para crear la reserva 
@@ -76,7 +76,7 @@ class StorageSpaceReservation(
   */
   fun existAvilableParkinSpace(listado: List<ParkingSpace>, vehicle: Vehicle): Boolean{
      return listado.any { parkingSpace -> 
-       parkingSpace.status == StatusParkingSpace.AVAILABLE && parkingSpace.typeVehicle == vehicle.typeVehicle
+       parkingSpace.status == StatusParkingSpace.AVAILABLE && parkingSpace.º == vehicle.typeVehicle
      }
   }
 

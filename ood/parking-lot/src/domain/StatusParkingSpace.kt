@@ -4,10 +4,8 @@ package domain
  * Status del Parking Space
  */
 enum class StatusParkingSpace {
-
     AVAILABLE,
-    BUSY,
+    OCCUPIED,
     RESERVED,
-    MAINTENANCE,
-
+    MAINTENANCE
 }
