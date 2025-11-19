@@ -1,143 +1,313 @@
-# Sistema de Estacionamiento (Parking Lot System) - OOD
+# Sistema de Gestión de Estacionamiento - Parking Lot
 
-## Concepto
+## Descripción General
 
-Un **Sistema de Estacionamiento** es una aplicación que gestiona un estacionamiento (parking lot) permitiendo a los usuarios:
-- Entrar/salir del estacionamiento
-- Buscar espacios disponibles
-- Registrar tickets de entrada y salida
-- Calcular tarifas según el tiempo de estancia
-- Procesar pagos
-- Generar reportes
-
-El objetivo es optimizar el uso del espacio disponible y maximizar la eficiencia en la gestión de vehículos.
+Diseñar e implementar un sistema de gestión eficiente para un estacionamiento moderno que permita la reserva, entrada, salida y control de vehículos. El sistema debe optimizar el uso del espacio, garantizar seguridad y proporcionar una buena experiencia de usuario.
 
 ---
 
 ## Requisitos Funcionales
 
-### 1. **Gestión de Espacios de Estacionamiento**
-- Crear y registrar espacios de estacionamiento
-- Clasificar espacios por tipo:
-  - Compactos (para vehículos pequeños)
-  - Regulares (para vehículos estándar)
-  - Grandes (para vehículos de tamaño grande)
-  - Handicap (para personas con discapacidad)
-  - EV (para vehículos eléctricos)
-- Cada espacio debe tener un ID único
-- Cada espacio tiene un estado: Disponible, Ocupado, Fuera de servicio
-- Mostrar disponibilidad en tiempo real
+### RF-01: Gestión de Tipos de Vehículos
 
-### 2. **Gestión de Vehículos**
-- Registrar vehículos con:
-  - Número de placa
+**Descripción**: El sistema debe soportar diferentes tipos de vehículos con características específicas.
+
+**Detalles**:
+- El sistema debe permitir registrar distintos tipos de vehículos (Automóvil, Motocicleta, Camión, Bicicleta, Discapacitado, etc.)
+- Cada tipo de vehículo debe tener:
+  - Código único identificador
+  - Nombre descriptivo
+  - Tamaño de estacionamiento requerido
+  - Tarifa base por hora
+
+**Criterios de Aceptación**:
+- ✓ Cada tipo de vehículo es identificable de forma única
+- ✓ Se pueden crear nuevos tipos de vehículos
+- ✓ Se pueden consultar todos los tipos disponibles
+
+---
+
+### RF-02: Gestión de Espacios de Estacionamiento
+
+**Descripción**: El sistema debe administrar los espacios físicos disponibles en el lote.
+
+**Detalles**:
+- El sistema debe permitir crear y configurar espacios de estacionamiento
+- Cada espacio debe tener:
+  - Número/identificador único
+  - Nivel del estacionamiento
+  - Tipo de espacio (para vehículos normales, discapacitados, carga/descarga)
+  - Estado actual (disponible, ocupado, reservado, mantenimiento)
+  - Tipo(s) de vehículo que puede albergar
+- El sistema debe poder mostrar disponibilidad en tiempo real
+- Cada espacio puede cambiar de estado según la actividad
+
+**Criterios de Aceptación**:
+- ✓ Se pueden crear espacios de estacionamiento
+- ✓ Cada espacio tiene un estado bien definido
+- ✓ Se puede consultar la disponibilidad de espacios
+- ✓ Los espacios se asignan a vehículos según su tipo y disponibilidad
+
+---
+
+### RF-03: Reserva de Espacio de Estacionamiento
+
+**Descripción**: Los usuarios deben poder reservar un espacio con anticipación.
+
+**Detalles**:
+- El usuario debe especificar:
   - Tipo de vehículo
-  - Color
-  - Marca/Modelo
-- Validar que el tipo de vehículo sea compatible con el espacio asignado
-- Permitir que el mismo vehículo estacione múltiples veces
+  - Fecha y hora de entrada
+  - Fecha y hora de salida (duración estimada)
+  - Placa/identificación del vehículo (opcional en reserva inicial)
+- El sistema debe:
+  - Verificar disponibilidad de espacios para el tipo de vehículo
+  - Asignar automáticamente un espacio disponible
+  - Crear una reserva con estado "PENDIENTE"
+  - Generar un código de confirmación único
+- Las reservas deben tener estado: PENDIENTE, CONFIRMADA, ACTIVA, COMPLETADA, CANCELADA, NO_SHOW
 
-### 3. **Entrada de Vehículos**
-- Buscar espacios disponibles del tipo correcto
-- Asignar un espacio al vehículo
-- Generar ticket de entrada con:
-  - Número de espacio
-  - Hora de entrada
-  - Número de placa del vehículo
-- Actualizar estado del espacio a "Ocupado"
+**Criterios de Aceptación**:
+- ✓ Se puede crear una reserva con datos válidos
+- ✓ El sistema valida disponibilidad antes de confirmar
+- ✓ Se asigna un espacio compatible con el tipo de vehículo
+- ✓ Se genera un código de confirmación único
+- ✓ La reserva cambia de estado correctamente
 
-### 4. **Salida de Vehículos**
-- Aceptar número de espacio o placa del vehículo
-- Validar el ticket
-- Registrar hora de salida
-- Calcular costo de estacionamiento
-- Marcar espacio como "Disponible"
+---
 
-### 5. **Cálculo de Tarifas**
-- Implementar política de precios flexible
-- Opciones:
-  - Tarifa por hora
-  - Tarifa por día completo
-  - Tarifa por mes
-  - Descuentos por largo estacionamiento
-- Calcular automáticamente el costo según tiempo de estancia
+### RF-04: Procesamiento de Pagos
 
-### 6. **Procesamiento de Pagos**
-- Aceptar múltiples métodos de pago:
-  - Efectivo
-  - Tarjeta de crédito/débito
-  - Billetera digital
-- Registrar comprobantes de pago
-- Generar recibos
+**Descripción**: El sistema debe calcular y procesar el pago por la reserva.
 
-### 7. **Consultas y Reportes**
-- Consultar espacios disponibles por tipo
-- Consultar historial de estacionamientos
-- Reportes de ingresos
-- Reportes de ocupación
+**Detalles**:
+- El sistema debe:
+  - Calcular la tarifa basada en tipo de vehículo y duración
+  - Aplicar descuentos (si existen tarjetas de cliente frecuente)
+  - Procesar el pago (simulado)
+  - Emitir un recibo/comprobante
+  - Cambiar estado de reserva a "CONFIRMADA" tras pago exitoso
+- Debe soportar diferentes métodos de pago (tarjeta de crédito, efectivo, billetera digital, etc.)
+- Debe registrar transacciones para auditoría
+
+**Criterios de Aceptación**:
+- ✓ El cálculo de tarifa es correcto
+- ✓ Se procesa el pago exitosamente
+- ✓ Se genera un recibo con detalles de la transacción
+- ✓ La reserva se confirma después del pago
+- ✓ Hay un registro de transacciones
+
+---
+
+### RF-05: Entrada de Vehículo al Estacionamiento
+
+**Descripción**: El sistema debe registrar la entrada de un vehículo con una reserva válida.
+
+**Detalles**:
+- El usuario presenta su código de confirmación o placa del vehículo en la garita
+- El sistema debe:
+  - Validar que exista una reserva confirmada
+  - Validar que la placa coincida con la reserva (si está registrada)
+  - Validar que sea dentro del horario permitido (ventana de tolerancia)
+  - Registrar la hora exacta de entrada
+  - Cambiar estado de la reserva a "ACTIVA"
+  - Cambiar estado del espacio asignado a "OCUPADO"
+  - Emitir un ticket de entrada
+- Debe permitir tolerancia de tiempo (ej: 15 minutos antes/después de la hora reservada)
+
+**Criterios de Aceptación**:
+- ✓ Se valida la reserva antes de permitir entrada
+- ✓ Se registra la hora exacta de entrada
+- ✓ El espacio cambia a ocupado
+- ✓ Se emite un ticket de confirmación
+- ✓ Se permite tolerancia de tiempo
+
+---
+
+### RF-06: Salida de Vehículo (Salida Normal)
+
+**Descripción**: El sistema debe registrar la salida de un vehículo al término de su reserva.
+
+**Detalles**:
+- El usuario presenta su ticket de entrada o código
+- El sistema debe:
+  - Validar que el vehículo está registrado como "ACTIVO" en el espacio
+  - Registrar la hora exacta de salida
+  - Calcular duración real del estacionamiento
+  - Liberar el espacio (cambiar a "DISPONIBLE")
+  - Cambiar estado de reserva a "COMPLETADA"
+  - Emitir ticket de salida con resumen
+- Si la salida es dentro del tiempo reservado: se completa sin cargo adicional
+- Si hay exceso de tiempo: se cobra tarifa adicional
+
+**Criterios de Aceptación**:
+- ✓ Se valida que el vehículo está activo
+- ✓ Se registra hora de salida correctamente
+- ✓ El espacio se libera correctamente
+- ✓ Se emite ticket de salida
+- ✓ Se calcula correctamente cargos por tiempo extra (si aplica)
+
+---
+
+### RF-07: Salida Anticipada
+
+**Descripción**: El sistema debe permitir que un usuario se vaya antes de la hora reservada.
+
+**Detalles**:
+- El usuario solicita salida anticipada antes de la hora reservada
+- El sistema debe:
+  - Registrar la nueva hora de salida
+  - Calcular duración real
+  - Procesar reembolso (si aplica según política)
+  - Liberar el espacio inmediatamente
+  - Cambiar estado de reserva a "COMPLETADA"
+  - Emitir ticket actualizado
+- La política de reembolso debe ser configurable (ej: 50% del tiempo no utilizado)
+
+**Criterios de Aceptación**:
+- ✓ Se permite solicitar salida anticipada
+- ✓ Se calcula reembolso según política
+- ✓ El espacio se libera inmediatamente
+- ✓ Se emite ticket actualizado
+
+---
+
+### RF-08: Manejo de No-Show (Reserva No Utilizada)
+
+**Descripción**: El sistema debe detectar y manejar reservas que no fueron utilizadas.
+
+**Detalles**:
+- Si un usuario no se presenta dentro de la ventana de tolerancia:
+  - El sistema debe cambiar estado de la reserva a "NO_SHOW"
+  - El espacio debe ser liberado automáticamente tras tiempo de espera
+  - Se aplica política de penalización (sin reembolso, reembolso parcial, etc.)
+  - Se registra el no-show para historial del usuario
+- Ventana de tolerancia: configurable (ej: 15 minutos después de hora reservada)
+
+**Criterios de Aceptación**:
+- ✓ Se detecta automáticamente no-show tras ventana de tolerancia
+- ✓ El espacio se libera
+- ✓ Se aplica penalización según política
+- ✓ Se registra en historial
+
+---
+
+### RF-09: Cancelación de Reserva
+
+**Descripción**: El sistema debe permitir cancelar una reserva antes de que se confirme.
+
+**Detalles**:
+- El usuario puede cancelar una reserva en estado "PENDIENTE" o "CONFIRMADA"
+- El sistema debe:
+  - Cambiar estado a "CANCELADA"
+  - Liberar el espacio asignado
+  - Procesar reembolso según política de cancelación (variable según proximidad)
+  - Registrar la cancelación
+- Políticas de cancelación:
+  - Cancelación 24+ horas antes: reembolso completo
+  - Cancelación 2-24 horas antes: reembolso 50%
+  - Cancelación menos de 2 horas: sin reembolso
+
+**Criterios de Aceptación**:
+- ✓ Se puede cancelar una reserva válida
+- ✓ El espacio se libera
+- ✓ Se calcula reembolso según política
+- ✓ Se registra la cancelación
+
+---
+
+### RF-10: Check-in/Check-out en Garita
+
+**Descripción**: Sistema de control en garita para entrada y salida de vehículos.
+
+**Detalles**:
+- Personal de garita debe poder:
+  - Registrar entrada escaneando código/placa
+  - Registrar salida escaneando código/placa
+  - Ver datos de la reserva (horario, tipo vehículo, tarifa)
+  - Manejar excepciones (vehículos sin reserva, errores de lectura)
+- El sistema debe:
+  - Validar datos contra base de datos
+  - Registrar toda actividad para auditoría
+  - Generar alertas si hay discrepancias
+  - Permitir entrada manual en caso de lectura fallida
+
+**Criterios de Aceptación**:
+- ✓ Se puede registrar entrada mediante código/placa
+- ✓ Se puede registrar salida mediante código/placa
+- ✓ Se valida información contra reserva
+- ✓ Hay auditoría completa de transacciones
+
+---
+
+### RF-11: Consultas y Reportes
+
+**Descripción**: El sistema debe proporcionar consultas de información.
+
+**Detalles**:
+- Debe permitir consultar:
+  - Disponibilidad actual de espacios (por tipo)
+  - Histórico de reservas de un usuario
+  - Ocupación del estacionamiento (total y por tipo)
+  - Estadísticas de uso
+  - Ingresos generados
+- Filtros: por fecha, tipo de vehículo, usuario, estado
+
+**Criterios de Aceptación**:
+- ✓ Se puede consultar disponibilidad en tiempo real
+- ✓ Se puede obtener histórico de reservas
+- ✓ Se puede generar estadísticas
 
 ---
 
 ## Requisitos No Funcionales
 
-### 1. **Rendimiento**
-- Búsqueda de espacios disponibles < 100ms
-- Procesamiento de entrada/salida < 500ms
-- Sistema debe soportar múltiples usuarios simultáneamente
+### RNF-01: Disponibilidad
+- El sistema debe estar disponible 24/7 con máximo 99.5% uptime
 
-**Tips de trabajo:**
-- Usa HashMap o ConcurrentHashMap para búsquedas O(1)
-- Mantén índices separados por tipo de espacio
-- Implementa caché de espacios disponibles
+### RNF-02: Rendimiento
+- Tiempo de respuesta < 200ms para operaciones críticas (asignación de espacio, entrada/salida)
+- El sistema debe soportar al menos 100 transacciones concurrentes
 
-### 2. **Disponibilidad**
-- Alta disponibilidad del sistema (99.9%)
-- Gestión de fallos graceful
-- Recuperación automática ante errores
+### RNF-03: Escalabilidad
+- Debe poder manejar estacionamientos con hasta 5,000 espacios
+- Debe ser fácil agregar nuevos estacionamientos
 
-**Tips de trabajo:**
-- Implementa logging completo de todas las operaciones
-- Usa excepciones custom para diferentes tipos de errores
-- Diseña para fallback graceful (si no hay espacio, rechaza entrada clara)
+### RNF-04: Seguridad
+- Autenticación y autorización de usuarios
+- Encriptación de datos sensibles (pagos)
+- Auditoría completa de operaciones
+- Validación de entrada en todas las interfaces
 
-### 3. **Escalabilidad**
-- Soportar múltiples pisos y secciones
-- Crecer sin rediseño de arquitectura
-- Soportar un crecimiento del 100% de usuarios
+### RNF-05: Mantenibilidad
+- Código modular y bien documentado
+- Principios SOLID
+- Patrones de diseño apropiados
+- Fácil extensión para nuevas características
 
-**Tips de trabajo:**
-- Usa Enums para tipos de espacios y vehículos (type-safe)
-- Diseña con interfaces para abstraer comportamientos
-- Implementa Strategy Pattern para precios flexible
+### RNF-06: Confiabilidad
+- Recuperación ante fallos
+- Consistencia de datos
+- Transacciones atómicas para pagos
 
-### 4. **Seguridad**
-- Proteger datos de vehículos y usuarios
-- Auditoría de transacciones financieras
-- Validar autenticación de usuarios
+---
 
-**Tips de trabajo:**
-- Valida entrada temprana (placa válida, tipo soportado)
-- Registra todas las transacciones financieras
-- Implementa DAO (Data Access Objects) para abstraer persistencia
+## Restricciones y Consideraciones
 
-### 5. **Mantenibilidad**
-- Código limpio y bien estructurado (OOD)
-- Fácil de extender
-- Documentación clara
-- Patrones de diseño reconocibles
+- Un vehículo solo puede ocupar un espacio a la vez
+- Un espacio solo puede tener un vehículo a la vez
+- Las reservas son nominales (para un usuario específico)
+- Los datos de pagos son sensibles y requieren encriptación
+- El sistema debe mantener auditoría completa de operaciones
+- Debe haber tolerancia de tiempo para entrada/salida (configurable)
 
-**Tips de trabajo:**
-- Separa lógica de negocio de persistencia
-- Crea interfaces claras entre componentes
-- Usa naming consistente (Vehicle vs Vehículo - elige uno)
-- Documenta decisiones de diseño importantes
+---
 
-### 6. **Usabilidad**
-- Interfaz intuitiva
-- Mensajes de error claros
-- Tiempos de respuesta aceptables
+## Próximos Pasos
 
-**Tips de trabajo:**
-- Define excepciones claras con mensajes descriptivos
-- Maneja los casos de error de forma explícita
-- Proporciona feedback claro al usuario (entrada exitosa, pago completado, etc.)
+Basándote en estos requisitos funcionales, implementa las clases necesarias considerando:
+1. Modelado del dominio (clases principales)
+2. Relaciones entre entidades
+3. Estados y transiciones
+4. Manejo de errores y excepciones
+5. Principios SOLID y patrones de diseño
