@@ -1,5 +1,9 @@
 package domain
 
+import enums.SpaceType
+import enums.StatusParkingSpace
+import enums.TypeVehicle
+
 /**
  * ParkingSpace - Representa un espacio individual de estacionamiento
  *

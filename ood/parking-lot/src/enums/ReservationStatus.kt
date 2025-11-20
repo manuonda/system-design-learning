@@ -4,5 +4,6 @@ enum class ReservationStatus{
      ACTIVE,
      COMPLETED,
      CANCELED,
-     NO_SHOW
+     NO_SHOW,
+     PENDING
 }

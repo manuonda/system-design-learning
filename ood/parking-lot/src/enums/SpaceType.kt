@@ -1,4 +1,4 @@
-package domain
+package enums
 
 /**
  * SpaceType -Type spaces

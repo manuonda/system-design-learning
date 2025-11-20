@@ -1,4 +1,4 @@
-package domain
+package enums
 
 /**
  * Status del Parking Space

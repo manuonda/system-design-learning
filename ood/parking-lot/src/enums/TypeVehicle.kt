@@ -1,10 +1,10 @@
-package domain
+package enums
 
 enum class TypeVehicle(
   val code:String,
     val description: String,
     val widthSize: Double,
-    val heigthSize: Double,
+    val heightSize: Double,
 ){
     CAR("CAR", "Automobile", 2.0, 1.5),
     MOTORCYCLE("MOTORCYCLE", "Motorcycle", 1.0, 0.8),
