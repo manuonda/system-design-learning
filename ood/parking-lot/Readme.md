@@ -1,6 +1,6 @@
 # Parking Lot Management System - OOP Design
 
-Version in **[🇪 Español](README.sp.md)**
+Version in **[🇪 Español](Readme.sp.md)**
 ## Overview
 
 A simple parking lot management system that enables vehicle entry, space allocation, exit processing, and fare calculation. The system uses OOP design patterns to maintain clean, scalable, and maintainable architecture.
