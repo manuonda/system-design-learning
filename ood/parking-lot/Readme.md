@@ -467,11 +467,3 @@ fun main() {
 ## Author
 
 **David Garcia** (@manuonda)
-
-**Date:** November 2025
-
----
-
-## License
-
-Educational Project - Free to use for learning purposes
