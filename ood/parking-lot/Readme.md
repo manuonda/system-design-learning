@@ -1,5 +1,6 @@
 # Parking Lot Management System - OOP Design
 
+Version in **[🇪 Español](README.sp.md)**
 ## Overview
 
 A simple parking lot management system that enables vehicle entry, space allocation, exit processing, and fare calculation. The system uses OOP design patterns to maintain clean, scalable, and maintainable architecture.
@@ -81,14 +82,12 @@ enum class TypeVehicle {
 **Flow:**
 ```
 User arrives with vehicle
-    |
-    v
+    ↓
 System searches for available space for that type
-    |
-    v
+    ↓
 Space available?
-  |-- YES -> Assign space + Create ticket -> Return ticket
-  |-- NO -> Return null (no spaces available)
+  ├─  YES -> Assign space + Create ticket -> Return ticket
+  └─  NO -> Return null (no spaces available)
 ```
 
 **Acceptance Criteria:**
@@ -112,20 +111,15 @@ fun entry(vehicle: Vehicle): Ticket?
 **Flow:**
 ```
 User exits the parking lot
-    |
-    v
+    ↓
 System retrieves their ticket
-    |
-    v
+    ↓
 Calculate duration: exitTime - entryTime
-    |
-    v
+    ↓   
 Calculate fare: FareCalculator.calculateFare()
-    |
-    v
+    ↓
 Release space (status = AVAILABLE)
-    |
-    v
+    ↓
 Return fare to charge
 ```
 
@@ -282,22 +276,22 @@ class ParkingLotFacade(
 1. ENTRY
    Customer: "I want to park my car (ABC-123)"
    System:
-   |- Searches for available space for CAR
-   |- Finds space A1
-   |- Creates ticket #12345
-   |- Returns: "Ticket generated, space A1"
+   ├─  Searches for available space for CAR
+   ├─  Finds space A1
+   ├─  Creates ticket #12345
+   └─  Returns: "Ticket generated, space A1"
 
 2. [Car parked for 2 hours]
 
 3. EXIT
    Customer: "I'm leaving"
    System:
-   |- Retrieves ticket #12345
-   |- Records current exit time
-   |- Calculates duration: 2 hours
-   |- Calculates fare: $5/hour x 2h = $10
-   |- Releases space A1
-   |- Returns: "Fare: $10.00"
+   ├─  Retrieves ticket #12345
+   ├─  Records current exit time
+   ├─  Calculates duration: 2 hours
+   ├─  Calculates fare: $5/hour x 2h = $10
+   ├─  Releases space A1
+   └─  Returns: "Fare: $10.00"
 ```
 
 ---
@@ -322,17 +316,27 @@ The diagram includes:
 ## Simplified Data Flow
 
 ```
-ParkingLotFacade (Facade)
-  |
-  +-- ParkingManager        FareCalculator
-       |- Spaces             |- Base rates
-       |- Availability       |- Calculations
-       |
-       +-- Ticket (Parking Session)
-            |- ID
-            |- Vehicle
-            |- Assigned space
-            |- Times (entry/exit)
+┌─────────────────────────────────────────────────────────┐
+│           ParkingLotFacade (Facade)                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────────────────┐      ┌──────────────────────┐   │
+│  │ ParkingManager   │      │ FareCalculator       │   │
+│  ├──────────────────┤      ├──────────────────────┤   │
+│  │ • Espacios       │      │ • Tarifas base       │   │
+│  │ • Disponibilidad │      │ • Cálculos           │   │
+│  └────────┬─────────┘      └──────────────────────┘   │
+│           │                                            │
+│  ┌────────▼────────────────────────────────────────┐   │
+│  │         Ticket (Sesión de estacionamiento)      │   │
+│  ├───────────────────────────────────────────────┤   │
+│  │ • ID                                           │   │
+│  │ • Vehículo                                     │   │
+│  │ • Espacio asignado                             │   │
+│  │ • Tiempos (entrada/salida)                     │   │
+│  └───────────────────────────────────────────────┘   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -341,18 +345,18 @@ ParkingLotFacade (Facade)
 
 ```
 src/
-  domain/
-    |- Vehicle.kt              # Vehicle model
-    |- ParkingSpace.kt         # Parking space model
-    |- Ticket.kt               # Ticket model
-    |- ParkingManager.kt       # Space manager
-    |- FareCalculator.kt       # Fare calculator
-    |- ParkingLotFacade.kt     # Main facade
-  enums/
-    |- TypeVehicle.kt          # Vehicle types
-    |- SpaceType.kt            # Space types
-    |- StatusParkingSpace.kt   # Space statuses
-  Main.kt                       # Usage example
+├── domain/
+│   ├── Vehicle.kt              # Modelo de vehículo
+│   ├── ParkingSpace.kt         # Modelo de espacio
+│   ├── Ticket.kt               # Modelo de ticket
+│   ├── ParkingManager.kt       # Manager de espacios
+│   ├── FareCalculator.kt       # Calculador de tarifas
+│   └── ParkingLotFacade.kt     # Facade principal
+├── enums/
+│   ├── TypeVehicle.kt          # Tipos de vehículos
+│   ├── SpaceType.kt            # Tipos de espacios
+│   └── StatusParkingSpace.kt   # Estados de espacios
+└── Main.kt                      # Ejemplo de uso
 ```
 
 ---
@@ -403,67 +407,5 @@ fun main() {
 ```
 
 ---
-
-## Non-Functional Requirements (Simplified)
-
-| Requirement | Fulfillment |
-|------------|-------------|
-| Performance | O(1) for space search using firstOrNull() |
-| Scalability | Handles thousands of spaces without issues |
-| Maintainability | Clean code, well documented, OOD patterns |
-| Extensibility | Easy to add new vehicle types and pricing strategies |
-| Simplicity | No reservations, no complex payments, only entry/exit |
-
----
-
-## Differences: Simplified vs Complete Version
-
-| Aspect | Simplified | Complete |
-|--------|-----------|---------|
-| Reservations | No | Yes (PENDING, CONFIRMED, etc.) |
-| Payments | Simple fare | Refunds, discounts |
-| Cancellations | No | Yes, with policies |
-| No-shows | No | Yes, automatic |
-| Audit | No | Yes, complete |
-| Complexity | Low | High |
-| Main Classes | 6 | 10+ |
-| Lines of Code | ~400 | ~1000+ |
-| Purpose | Learning OOD | Production system |
-
----
-
-## Notes
-
-- System designed for educational purposes
-- Focus on SOLID principles and design patterns
-- Easy to extend and maintain
-- Solid foundation for adding more complex features
-
----
-
-## OOD Concepts Learned
-
-- Encapsulation - Private properties, public methods
-- Abstraction - Simplified interfaces through Facade
-- Inheritance - Inheritance with enums
-- Polymorphism - Different vehicle types, different rates
-- Composition - Objects contain other objects (Facade contains Manager, etc.)
-- Design Patterns - Facade, Manager, Strategy, Data Class
-
----
-
-## Possible Future Improvements
-
-1. Advance reservation system
-2. Real payment processing
-3. Notifications and alerts
-4. Reports and statistics
-5. Database persistence
-6. Authentication and authorization
-7. REST API for mobile application
-
----
-
-## Author
 
 **David Garcia** (@manuonda)

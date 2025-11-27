@@ -1,4 +1,5 @@
 # Sistema de Gestión de Estacionamiento - Parking Lot (Versión Simplificada)
+Version en **[🇺🇸 English](README.md)**
 
 ## Descripción General
 
@@ -358,25 +359,44 @@ src/
 └── Main.kt                      # Ejemplo de uso
 ```
 
----
+```kotlin
+fun main() {
+    // Create components
+    val parkingManager = ParkingManager()
+    val fareCalculator = FareCalculator()
+    val parkingLot = ParkingLotFacade(parkingManager, fareCalculator)
 
+    // Add spaces
+    val space1 = ParkingSpace(
+        identifier = "A1",
+        parkingLevel = 1,
+        spaceType = SpaceType.NORMAL,
+        status = StatusParkingSpace.AVAILABLE,
+        availableTypeVehicles = listOf(TypeVehicle.CAR, TypeVehicle.BUS)
+    )
+    parkingManager.addParkingSpace(space1)
 
-## 🔄 Diferencias: Versión Simplificada vs Completa
+    // Create vehicle
+    val car = Vehicle(
+        licensePlate = "ABC-123",
+        owner = "John Doe",
+        typeVehicle = TypeVehicle.CAR
+    )
 
-| Aspecto | Simplificada ✅ | Completa ❌ |
-|--------|-----------|---------|
-| **Reservas** | No | Sí (PENDING, CONFIRMED, etc.) |
-| **Pagos** | Tarifa simple | Reembolsos, descuentos |
-| **Cancelaciones** | No | Sí, con políticas |
-| **No-shows** | No | Sí, automáticos |
-| **Auditoría** | No | Sí, completa |
-| **Complejidad** | Baja | Alta |
-| **Clases** | 6 principales | 10+ |
-| **Líneas de código** | ~400 | ~1000+ |
-| **Propósito** | Aprendizaje OOD | Sistema productivo |
+    // ENTRY: Vehicle enters
+    val ticket = parkingLot.entry(car)
+    if (ticket != null) {
+        println("Ticket generated: ${ticket.ticketId}")
+        println("Assigned space: ${ticket.parkingSpace.identifier}")
+    }
 
----
+    // [Vehicle is parked...]
 
+    // EXIT: Vehicle leaves
+    val fare = parkingLot.exit(car)
+    if (fare != null) {
+        println("Fare to pay: $$fare")
+    }
+}
 ```
-@author: dgarcia(manuonda)
-```
+David Garcia: (@manuonda)
