@@ -13,11 +13,11 @@ System design is the process of defining the architecture, components, modules, 
 
 ### OOD(Object-Oriented Design)
 
-**[Parking Lot System(English)](./ood/parking-lot/README.md)** | **[Parking Lot System(Spanish)](./ood/parking-lot/README.es.md)**
+**[Parking Lot System(English)](./ood/parking-lot/Readme.md)** | **[Parking Lot System(Spanish)](./ood/parking-lot/Readme.sp.md)**
 
 ### Applications 
 
-**[Short URL(Ingles)](./short-url/README.md)** | **[Short URL(Spanish)](./short-url/README.es.md)**
+**[Short URL(English)](./short-url/Readme.md)** | **[Short URL(Spanish)](./short-url/Readme.sp.md)**
 
 
 ## Resources
