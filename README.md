@@ -1,8 +1,6 @@
 # System Design Learning
 
-**[🌎 Spanish](README.es.md)** | **🇺🇸 English**ystem Design Learning
-
-**[� Español](README.es.md)** | **🇺🇸 English**
+Version in **[🇪 Español](README.es.md)** 
 
 A comprehensive repository for learning system design concepts through practical implementations and real-world examples.
 
@@ -10,26 +8,17 @@ A comprehensive repository for learning system design concepts through practical
 
 System design is the process of defining the architecture, components, modules, interfaces, and data for a system to satisfy specified requirements. It involves making high-level decisions about how different parts of a system will interact, how data will flow, and how the system will scale to handle increasing load.
 
-### Key System Design Concepts
-
-- **Scalability**: Designing systems that can handle increased load
-- **Reliability**: Building fault-tolerant systems that continue operating despite failures
-- **Availability**: Ensuring systems remain operational and accessible
-- **Consistency**: Managing data consistency across distributed systems
-- **Performance**: Optimizing for speed and efficiency
-- **Security**: Implementing proper authentication, authorization, and data protection
-- **Caching**: Improving performance through strategic data storage
-- **Load Balancing**: Distributing requests across multiple servers
-- **Database Design**: Choosing appropriate data storage solutions
-- **Microservices**: Breaking down monolithic applications into smaller services
 
 ## Learning Path
 
-### 1. URL Shortener
-**Technology Stack**: Spring Boot, Redis, PostgreSQL, Docker  
-**Concepts Covered**: Caching strategies, Database design, Authentication, Performance optimization  
+### OOD(Object-Oriented Design)
 
-**[📖 English Documentation](./short-url/README.md)** | **[📖 Documentation in Spanish](./short-url/README.es.md)**
+**[Parking Lot System(English)](./ood/parking-lot/README.md)** | **[Parking Lot System(Spanish)](./ood/parking-lot/README.es.md)**
+
+### Applications 
+
+**[Short URL(Ingles)](./short-url/README.md)** | **[Short URL(Spanish)](./short-url/README.es.md)**
+
 
 ## Resources
 

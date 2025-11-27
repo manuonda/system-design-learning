@@ -1,6 +1,6 @@
 # Aprendizaje de Diseño de Sistemas
 
-**� Español** | **[🇺🇸 English](README.md)**
+Version en **[🇺🇸 English](README.md)**
 
 Un repositorio completo para aprender conceptos de diseño de sistemas a través de implementaciones prácticas y ejemplos del mundo real.
 
@@ -8,26 +8,14 @@ Un repositorio completo para aprender conceptos de diseño de sistemas a través
 
 El diseño de sistemas es el proceso de definir la arquitectura, componentes, módulos, interfaces y datos de un sistema para satisfacer requisitos específicos. Implica tomar decisiones de alto nivel sobre cómo las diferentes partes de un sistema interactuarán, cómo fluirán los datos y cómo el sistema escalará para manejar una carga creciente.
 
-### Conceptos Clave del Diseño de Sistemas
-
-- **Escalabilidad**: Diseñar sistemas que puedan manejar una carga incrementada
-- **Confiabilidad**: Construir sistemas tolerantes a fallos que continúen operando a pesar de las fallas
-- **Disponibilidad**: Asegurar que los sistemas permanezcan operativos y accesibles
-- **Consistencia**: Gestionar la consistencia de datos en sistemas distribuidos
-- **Rendimiento**: Optimizar para velocidad y eficiencia
-- **Seguridad**: Implementar autenticación, autorización y protección de datos adecuadas
-- **Caché**: Mejorar el rendimiento a través del almacenamiento estratégico de datos
-- **Balanceo de Carga**: Distribuir solicitudes entre múltiples servidores
-- **Diseño de Base de Datos**: Elegir soluciones apropiadas de almacenamiento de datos
-- **Microservicios**: Dividir aplicaciones monolíticas en servicios más pequeños
-
 ## Ruta de Aprendizaje
 
-### 1. Acortador de URLs
-**Stack Tecnológico**: Spring Boot, Redis, PostgreSQL, Docker  
-**Conceptos Cubiertos**: Estrategias de caché, Diseño de base de datos, Autenticación, Optimización de rendimiento  
+### OOD(Object-Oriented Design)
+**[Parking Lot System(English)](./ood/parking-lot/README.md)** | **[Parking Lot System(Spanish)](./ood/parking-lot/README.es.md)**
 
-**[📖 Documentación en Español](./short-url/README.es.md)** | **[📖 English Documentation](./short-url/README.md)**
+### Applications 
+**[Short URL(Ingles)](./short-url/README.md)** | **[Short URL(Spanish)](./short-url/README.es.md)**
+
 
 ## Recursos
 
