@@ -1,0 +1,133 @@
+@startuml ParkingLotSystem
+
+!theme plain
+skinparam linetype ortho
+skinparam backgroundColor #FEFEFE
+skinparam classBackgroundColor #F0F0F0
+skinparam classBorderColor #333333
+skinparam classArrowColor #333333
+skinparam classTextColor #000000
+
+' Enums
+enum TypeVehicle {
+  CAR
+  MOTORCYCLE
+  TRUCK
+  BUS
+}
+
+enum SpaceType {
+  NORMAL
+  HANDICAPPED
+  COMPACT
+  OVERSIZED
+}
+
+enum StatusParkingSpace {
+  AVAILABLE
+  OCCUPIED
+  RESERVED
+  MAINTENANCE
+}
+
+' Domain Classes
+class Vehicle {
+  - licensePlate: String
+  - owner: String
+  - typeVehicle: TypeVehicle
+  --
+  + toString(): String
+}
+
+class ParkingSpace {
+  - identifier: String
+  - parkingLevel: Int
+  - spaceType: SpaceType
+  - status: StatusParkingSpace
+  - availableTypeVehicles: List<TypeVehicle>
+}
+
+class Ticket {
+  - ticketId: String
+  - vehicle: Vehicle
+  - parkingSpace: ParkingSpace
+  - entryTime: LocalDateTime
+  - exitTime: LocalDateTime?
+  --
+  + isActive(): Boolean
+  + getDuration(): Long?
+  + toString(): String
+}
+
+class ParkingManager {
+  - parkingSpaces: MutableList<ParkingSpace>
+  --
+  + addParkingSpace(space: ParkingSpace): void
+  + findAvailabeSpaces(typeVehicle: TypeVehicle): ParkingSpace?
+  + getAvailableSpaces(typeVehicle: TypeVehicle): List<ParkingSpace>
+  + getAvailableSpacesCount(typeVehicle: TypeVehicle): Int
+  + hasAvailableSpace(typeVehicle: TypeVehicle): Boolean
+  + releaseSpace(space: ParkingSpace): void
+  + getTotalSpaces(): Int
+  + getOccupiedSpaces(): Int
+}
+
+class FareCalculator {
+  - baseFares: Map<TypeVehicle, Double>
+  --
+  + calculateFare(vehicleType: TypeVehicle, durationHours: Long): Double
+  + getBaseFare(vehicleType: TypeVehicle): Double
+  + getAllFares(): Map<TypeVehicle, Double>
+}
+
+class ParkingLotFacade {
+  - parkingManager: ParkingManager
+  - fareCalculator: FareCalculator
+  - activeTickets: MutableMap<String, Ticket>
+  --
+  + entry(vehicle: Vehicle): Ticket?
+  + exit(vehicle: Vehicle): Double?
+  + getActiveTicket(licensePlate: String): Ticket?
+  + getActiveSessionsCount(): Int
+}
+
+' Relationships
+Vehicle --> TypeVehicle : uses
+ParkingSpace --> SpaceType : uses
+ParkingSpace --> StatusParkingSpace : uses
+ParkingSpace --> TypeVehicle : supports
+
+Ticket --> Vehicle : contains
+Ticket --> ParkingSpace : assigns
+
+ParkingManager --> ParkingSpace : manages
+ParkingManager --> TypeVehicle : searches by
+
+FareCalculator --> TypeVehicle : calculates fare
+
+ParkingLotFacade --> ParkingManager : uses
+ParkingLotFacade --> FareCalculator : uses
+ParkingLotFacade --> Ticket : creates/manages
+ParkingLotFacade --> Vehicle : accepts
+ParkingLotFacade --> TypeVehicle : filters by
+
+' Notes
+note right of ParkingLotFacade
+  **Facade Pattern**
+  Simplifies the interface for
+  the entire parking lot system
+end note
+
+note right of ParkingManager
+  **Manager Pattern**
+  Manages the lifecycle of
+  parking spaces
+end note
+
+note right of FareCalculator
+  **Strategy Pattern**
+  Encapsulates pricing logic
+  for different vehicle types
+end note
+
+@enduml
