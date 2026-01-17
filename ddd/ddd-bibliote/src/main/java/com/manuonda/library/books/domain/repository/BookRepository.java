@@ -17,4 +17,5 @@ public interface BookRepository {
     void save(Book book);
     Optional<Book> findById(Long id);
     List<Book> findAvailableBooks();
+    Optional<Book> findByIsbn(String isbn);
 }
