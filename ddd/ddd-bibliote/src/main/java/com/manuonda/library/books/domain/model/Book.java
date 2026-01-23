@@ -1,6 +1,7 @@
 package com.manuonda.library.books.domain.model;
 
 
+import com.manuonda.library.books.domain.vo.Author;
 import com.manuonda.library.books.domain.vo.BookTitle;
 import com.manuonda.library.books.domain.vo.CopiesCount;
 import com.manuonda.library.books.domain.vo.ISBN;
@@ -17,13 +18,13 @@ public class Book {
 
     private BookTitle title;
     private ISBN isbn;
-    private String author;
+    private Author author;
     private CopiesCount copiesCount;
 
     public Book() {
     }
 
-    public Book( BookTitle title, ISBN isbn, String author, CopiesCount copiesCount) {
+    public Book( BookTitle title, ISBN isbn, Author author, CopiesCount copiesCount) {
         this.title = title;
         this.isbn = isbn;
         this.author = author;
@@ -48,11 +49,11 @@ public class Book {
         this.isbn = isbn;
     }
 
-    public String getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Author author) {
         this.author = author;
     }
 

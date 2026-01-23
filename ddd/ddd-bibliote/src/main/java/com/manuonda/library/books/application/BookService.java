@@ -8,6 +8,7 @@ import com.manuonda.library.books.domain.exception.BookNotFoundException;
 import com.manuonda.library.books.domain.exception.DuplicateISBNException;
 import com.manuonda.library.books.domain.model.Book;
 import com.manuonda.library.books.domain.repository.BookRepository;
+import com.manuonda.library.books.domain.vo.Author;
 import com.manuonda.library.books.domain.vo.BookTitle;
 import com.manuonda.library.books.domain.vo.CopiesCount;
 import com.manuonda.library.books.domain.vo.ISBN;
@@ -30,7 +31,6 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final DomainEventpublisher
 
     public BookService(final BookRepository bookRepository) {
         this.bookRepository = bookRepository;
@@ -51,7 +51,7 @@ public class BookService {
         Book book = new Book(
                 BookTitle.parse(request.title()),
                 ISBN.parse(request.isbn()),
-                request.author(),
+                Author.parse(request.author()),
                 CopiesCount.parse(request.copies())
         );
 
@@ -70,7 +70,7 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(isbn));
 
         if(!isbn.equals(request.isbn())) {
-            Optional<Book> duplicateBook = this.bookRepository.findByIsbn(isbn);\
+            Optional<Book> duplicateBook = this.bookRepository.findByIsbn(isbn);
             if(duplicateBook.isPresent()) {
                 throw new DuplicateISBNException(isbn);
             }
@@ -78,7 +78,7 @@ public class BookService {
         }
 
         book.setTitle(BookTitle.parse(request.title()));
-        book.setAuthor(request.author());
+        book.setAuthor(Author.parse(request.author()));
         book.setCopiesCount(CopiesCount.parse(request.copies()));
 
         this.bookRepository.save(book);
@@ -96,7 +96,7 @@ public class BookService {
         return new BookResponse(
                 book.getIsbn().isbn(),
                 book.getTitle().title(),
-                book.getAuthor(),
+                book.getAuthor().author(),
                 book.getCopiesCount().value()
         );
     }
