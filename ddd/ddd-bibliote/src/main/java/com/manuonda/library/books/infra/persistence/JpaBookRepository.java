@@ -12,4 +12,6 @@ public interface JpaBookRepository extends JpaRepository<BookEntity, Long> {
 
     @Query("SELECT b FROM BookEntity b WHERE b.copies > 0 ")
     List<BookEntity> findAllCopies();
+
+    Optional<BookEntity> findByIsbn(String isbn);
 }
