@@ -87,6 +87,14 @@ public class BookService {
 
     }
 
+    public ListBookResponse listBooks(String isbn){
+       List<Book> books =  this.bookRepository.findAvailableBooks();
+       List<BookResponse> bookResponses = books.stream()
+               .map(this::toResponse)
+               .toList();
+       return bookResponses;
+    }
+
     /**
      * Mapper convert entity to domain dto of request
      * @param book
