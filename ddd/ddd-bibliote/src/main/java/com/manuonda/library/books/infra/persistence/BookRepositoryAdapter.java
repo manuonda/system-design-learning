@@ -24,6 +24,7 @@ public class BookRepositoryAdapter implements BookRepository {
     private final JpaBookRepository jpaBookRepository;
 
     public BookRepositoryAdapter(JpaBookRepository jpaBookRepository) {
+
         this.jpaBookRepository = jpaBookRepository;
     }
 

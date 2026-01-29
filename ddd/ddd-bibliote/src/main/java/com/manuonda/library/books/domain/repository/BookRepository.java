@@ -1,6 +1,8 @@
 package com.manuonda.library.books.domain.repository;
 
 
+import com.manuonda.library.books.application.dto.command.BookFilterRequest;
+import com.manuonda.library.books.domain.filter.BookSearchCriteria;
 import com.manuonda.library.books.domain.model.Book;
 
 import java.util.List;
@@ -16,6 +18,6 @@ public interface BookRepository {
 
     void save(Book book);
     Optional<Book> findById(Long id);
-    List<Book> findAvailableBooks();
     Optional<Book> findByIsbn(String isbn);
+    List<Book> searchBooks(BookSearchCriteria request);
 }

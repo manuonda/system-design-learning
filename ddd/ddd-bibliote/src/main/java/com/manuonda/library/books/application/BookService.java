@@ -2,16 +2,19 @@ package com.manuonda.library.books.application;
 
 
 import com.manuonda.library.books.application.dto.command.AddBookRequest;
+import com.manuonda.library.books.application.dto.command.BookFilterRequest;
 import com.manuonda.library.books.application.dto.response.BookResponse;
 import com.manuonda.library.books.application.dto.response.ListBookResponse;
 import com.manuonda.library.books.domain.exception.BookNotFoundException;
 import com.manuonda.library.books.domain.exception.DuplicateISBNException;
+import com.manuonda.library.books.domain.filter.BookSearchCriteria;
 import com.manuonda.library.books.domain.model.Book;
 import com.manuonda.library.books.domain.repository.BookRepository;
 import com.manuonda.library.books.domain.vo.Author;
 import com.manuonda.library.books.domain.vo.BookTitle;
 import com.manuonda.library.books.domain.vo.CopiesCount;
 import com.manuonda.library.books.domain.vo.ISBN;
+import com.manuonda.library.shared.PagedResult;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -87,12 +90,15 @@ public class BookService {
 
     }
 
-    public ListBookResponse listBooks(String isbn){
-       List<Book> books =  this.bookRepository.findAvailableBooks();
-       List<BookResponse> bookResponses = books.stream()
-               .map(this::toResponse)
-               .toList();
-       return bookResponses;
+    public PagedResult<BookResponse> searchBooks(
+            BookFilterRequest bookFilterRequest
+    ){
+        BookSearchCriteria bookSearchCriteria = new BookSearchCriteria(
+                bookFilterRequest.isbn(),
+                bookFilterRequest.page(),
+                bookFilterRequest.size()
+        );
+        PagedResult
     }
 
     /**
