@@ -1,13 +1,15 @@
 package com.manuonda.library.books.infra.persistence;
 
 
+import com.manuonda.library.books.domain.dto.BookSearchCriteria;
 import com.manuonda.library.books.domain.model.Book;
 import com.manuonda.library.books.domain.repository.BookRepository;
-import jakarta.transaction.Transactional;
+import com.manuonda.library.shared.PagedResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,11 +23,11 @@ import java.util.Optional;
 @Repository
 public class BookRepositoryAdapter implements BookRepository {
 
+    private static final String ISBN = "isbn";
     private final JpaBookRepository jpaBookRepository;
 
     public BookRepositoryAdapter(JpaBookRepository jpaBookRepository) {
-
-        this.jpaBookRepository = jpaBookRepository;
+       this.jpaBookRepository = jpaBookRepository;
     }
 
 
@@ -47,17 +49,20 @@ public class BookRepositoryAdapter implements BookRepository {
                 .map(BookEntityMapper::toDomain);
     }
 
-    @Override
-    public List<Book> findAvailableBooks() {
-        return jpaBookRepository.findAllCopies()
-                .stream()
-                .map(BookEntityMapper::toDomain)
-                .toList();
-    }
 
     @Override
     public Optional<Book> findByIsbn(String isbn) {
         return this.jpaBookRepository.findByIsbn(isbn)
                 .map(BookEntityMapper::toDomain);
+    }
+
+    @Override
+    public PagedResult<Book> searchBooks(BookSearchCriteria request) {
+        Sort sort = Sort.by(Sort.Direction.ASC, ISBN);
+        PageRequest pageRequest = PageRequest.of(request.page() -1, request.size(),sort);
+        Page<BookEntity> booksEntity = this.jpaBookRepository.searchBooks(request.isbn(),pageRequest);
+        Page<Book> domainPage = booksEntity.map(BookEntityMapper::toDomain);
+        return new PagedResult<>(domainPage);
+
     }
 }

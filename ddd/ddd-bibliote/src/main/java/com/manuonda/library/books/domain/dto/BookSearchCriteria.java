@@ -1,4 +1,4 @@
-package com.manuonda.library.books.domain.filter;
+package com.manuonda.library.books.domain.dto;
 
 
 /**

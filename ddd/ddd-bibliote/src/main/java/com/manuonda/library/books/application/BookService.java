@@ -4,10 +4,9 @@ package com.manuonda.library.books.application;
 import com.manuonda.library.books.application.dto.command.AddBookRequest;
 import com.manuonda.library.books.application.dto.command.BookFilterRequest;
 import com.manuonda.library.books.application.dto.response.BookResponse;
-import com.manuonda.library.books.application.dto.response.ListBookResponse;
+import com.manuonda.library.books.domain.dto.BookSearchCriteria;
 import com.manuonda.library.books.domain.exception.BookNotFoundException;
 import com.manuonda.library.books.domain.exception.DuplicateISBNException;
-import com.manuonda.library.books.domain.filter.BookSearchCriteria;
 import com.manuonda.library.books.domain.model.Book;
 import com.manuonda.library.books.domain.repository.BookRepository;
 import com.manuonda.library.books.domain.vo.Author;
@@ -15,11 +14,9 @@ import com.manuonda.library.books.domain.vo.BookTitle;
 import com.manuonda.library.books.domain.vo.CopiesCount;
 import com.manuonda.library.books.domain.vo.ISBN;
 import com.manuonda.library.shared.PagedResult;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -90,6 +87,8 @@ public class BookService {
 
     }
 
+
+    @Transactional(readOnly = true)
     public PagedResult<BookResponse> searchBooks(
             BookFilterRequest bookFilterRequest
     ){
@@ -98,7 +97,8 @@ public class BookService {
                 bookFilterRequest.page(),
                 bookFilterRequest.size()
         );
-        PagedResult
+        PagedResult<Book> books = this.bookRepository.searchBooks(bookSearchCriteria);
+        return PagedResult.of(books, this::toResponse);
     }
 
     /**
