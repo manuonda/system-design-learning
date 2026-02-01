@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 public interface BookRepository {
 
-    void save(Book book);
+    Book save(Book book);
     Optional<Book> findById(Long id);
     Optional<Book> findByIsbn(String isbn);
     PagedResult<Book> searchBooks(BookSearchCriteria request);

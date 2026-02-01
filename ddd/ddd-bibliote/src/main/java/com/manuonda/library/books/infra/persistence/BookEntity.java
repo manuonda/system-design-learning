@@ -1,11 +1,19 @@
 package com.manuonda.library.books.infra.persistence;
 
+import com.manuonda.library.shared.BaseEntity;
 import jakarta.persistence.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+
+/**
+ * Class BookEntity
+ * @author dgarcia
+ * @version 1.0
+ * @since 1/2/2026
+ */
 @Entity
 @Table(name="books")
-public class BookEntity {
+public class BookEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

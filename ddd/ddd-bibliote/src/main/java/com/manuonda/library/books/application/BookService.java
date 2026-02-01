@@ -13,6 +13,7 @@ import com.manuonda.library.books.domain.vo.Author;
 import com.manuonda.library.books.domain.vo.BookTitle;
 import com.manuonda.library.books.domain.vo.CopiesCount;
 import com.manuonda.library.books.domain.vo.ISBN;
+import com.manuonda.library.shared.DomainEventPublisher;
 import com.manuonda.library.shared.PagedResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +32,12 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
-    public BookService(final BookRepository bookRepository) {
+    public BookService(final BookRepository bookRepository, 
+        DomainEventPublisher domainEventPublisher) {
         this.bookRepository = bookRepository;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
 
@@ -48,14 +52,15 @@ public class BookService {
             throw new DuplicateISBNException("ISBN already exists :"  + request.isbn());
         }
 
-        Book book = new Book(
+        Book book = Book.create(
                 BookTitle.parse(request.title()),
                 ISBN.parse(request.isbn()),
                 Author.parse(request.author()),
                 CopiesCount.parse(request.copies())
         );
 
-        this.bookRepository.save(book);
+        Book bookSaved = this.bookRepository.save(book);
+        this.domainEventPublisher.publish(bookSaved.pullDomainEvents());
         return toResponse(book);
     }
 
@@ -66,23 +71,28 @@ public class BookService {
      * @return
      */
     public BookResponse updateBook(String isbn, AddBookRequest request){
+        //Load the book to update
         Book book = this.bookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new BookNotFoundException(isbn));
 
+        //Check if the ISBN is different
         if(!isbn.equals(request.isbn())) {
-            Optional<Book> duplicateBook = this.bookRepository.findByIsbn(isbn);
+            //Check if the new ISBN is already in use
+            Optional<Book> duplicateBook = this.bookRepository.findByIsbn(request.isbn());
             if(duplicateBook.isPresent()) {
                 throw new DuplicateISBNException(isbn);
             }
-            book.setIsbn(ISBN.parse(request.isbn()));
         }
 
-        book.setTitle(BookTitle.parse(request.title()));
-        book.setAuthor(Author.parse(request.author()));
-        book.setCopiesCount(CopiesCount.parse(request.copies()));
+        book.update(
+                BookTitle.parse(request.title()),
+                ISBN.parse(request.isbn()),
+                Author.parse(request.author()),
+                CopiesCount.parse(request.copies())
+        );
 
         this.bookRepository.save(book);
-
+        this.domainEventPublisher.publish(book.pullDomainEvents());
         return toResponse(book);
 
     }
