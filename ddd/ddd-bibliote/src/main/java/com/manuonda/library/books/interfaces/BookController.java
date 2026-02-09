@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ public class BookController {
 
     @Operation(summary = "Agregar un libro", description = "Crea un nuevo libro en la biblioteca")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Libro creado exitosamente",
+            @ApiResponse(responseCode = "201", description = "Libro creado exitosamente",
                     content = @Content(schema = @Schema(implementation = BookResponse.class))),
             @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content),
             @ApiResponse(responseCode = "409", description = "ISBN duplicado", content = @Content)
@@ -37,7 +38,7 @@ public class BookController {
     public ResponseEntity<BookResponse> addBook(
             @RequestBody AddBookRequest request) {
         BookResponse response = bookService.addBook(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "Actualizar un libro", description = "Actualiza un libro existente por ISBN")
@@ -53,6 +54,31 @@ public class BookController {
             @PathVariable String isbn,
             @RequestBody AddBookRequest request) {
         BookResponse response = bookService.updateBook(isbn, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Prestar un libro", description = "Registra el préstamo de una copia del libro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Libro prestado exitosamente",
+                    content = @Content(schema = @Schema(implementation = BookResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Libro no encontrado", content = @Content),
+            @ApiResponse(responseCode = "409", description = "No hay copias disponibles", content = @Content)
+    })
+    @PostMapping("/{isbn}/borrow")
+    public ResponseEntity<BookResponse> borrowBook(@PathVariable String isbn) {
+        BookResponse response = bookService.borrowBook(isbn);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Devolver un libro", description = "Registra la devolución de una copia del libro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Libro devuelto exitosamente",
+                    content = @Content(schema = @Schema(implementation = BookResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Libro no encontrado", content = @Content)
+    })
+    @PostMapping("/{isbn}/return")
+    public ResponseEntity<BookResponse> returnBook(@PathVariable String isbn) {
+        BookResponse response = bookService.returnBook(isbn);
         return ResponseEntity.ok(response);
     }
 

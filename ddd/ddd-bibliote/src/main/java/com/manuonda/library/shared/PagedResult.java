@@ -2,8 +2,11 @@ package com.manuonda.library.shared;
 
 import java.util.List;
 import java.util.function.Function;
-import org.springframework.data.domain.Page;
-
+/** * Class PagedResult
+ * @author  dgarcia
+ * @version 1.0
+ * @date    15/01/2025
+ */
 public record PagedResult<T>(
         List<T> data,
         long totalElements,
@@ -13,18 +16,6 @@ public record PagedResult<T>(
         boolean isLast,
         boolean hasNext,
         boolean hasPrevious) {
-
-    public PagedResult(Page<T> page) {
-        this(
-                page.getContent(),
-                page.getTotalElements(),
-                page.getNumber() + 1,
-                page.getTotalPages(),
-                page.isFirst(),
-                page.isLast(),
-                page.hasNext(),
-                page.hasPrevious());
-    }
 
     public static <S, T> PagedResult<T> of(PagedResult<S> pagedResult, Function<S, T> mapper) {
         return new PagedResult<>(

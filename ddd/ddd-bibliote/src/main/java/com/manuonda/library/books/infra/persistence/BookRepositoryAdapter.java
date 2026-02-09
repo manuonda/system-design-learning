@@ -32,27 +32,17 @@ public class BookRepositoryAdapter implements BookRepository {
 
 
     @Override
-    public void save(Book book) {
-     Optional<BookEntity> bookExisting = this.jpaBookRepository.findByIsbn(book.getIsbn().isbn());
-     if (bookExisting.isPresent()) {
-         BookEntity bookEntity = bookExisting.get();
-         bookEntity.setIsbn(book.getIsbn().isbn());
-         bookEntity.setTitle(book.getTitle().title());
-         bookEntity.setAuthor(book.getAuthor().author());
-         bookEntity.setCopies(book.getCopiesCount().value());
-
-         jpaBookRepository.save(bookEntity);
-     } else {
-         BookEntity entity = BookEntityMapper.toEntity(book);
-         jpaBookRepository.save(entity);
-     }
-
+    public void create(Book book) {
+        BookEntity entity = BookEntityMapper.toEntity(book);
+        jpaBookRepository.save(entity);
     }
 
     @Override
-    public Optional<Book> findById(Long id) {
-        return this.jpaBookRepository.findById(id)
-                .map(BookEntityMapper::toDomain);
+    public void update(Book book) {
+        BookEntity entity = jpaBookRepository.findByIsbn(book.getIsbn().isbn())
+                .orElseThrow();
+        BookEntityMapper.updateEntity(entity, book);
+        jpaBookRepository.save(entity);
     }
 
 
@@ -68,7 +58,15 @@ public class BookRepositoryAdapter implements BookRepository {
         PageRequest pageRequest = PageRequest.of(request.page() -1, request.size(),sort);
         Page<BookEntity> booksEntity = this.jpaBookRepository.searchBooks(request.isbn(),pageRequest);
         Page<Book> domainPage = booksEntity.map(BookEntityMapper::toDomain);
-        return new PagedResult<>(domainPage);
-
+        return new PagedResult<>(
+                domainPage.getContent(),
+                domainPage.getTotalElements(),
+                domainPage.getNumber() + 1,
+                domainPage.getTotalPages(),
+                domainPage.isFirst(),
+                domainPage.isLast(),
+                domainPage.hasNext(),
+                domainPage.hasPrevious()
+        );
     }
 }

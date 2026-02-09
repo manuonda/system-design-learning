@@ -1,7 +1,8 @@
-package com.manuonda.library.shared;
+package com.manuonda.library.shared.infra;
 
+import com.manuonda.library.shared.DomainEvent;
+import com.manuonda.library.shared.DomainEventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -10,7 +11,7 @@ import java.util.Collection;
  *
  */
 @Service
-public class SpringEventPublisher implements DomainEventPublisher{
+public class SpringEventPublisher implements DomainEventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 

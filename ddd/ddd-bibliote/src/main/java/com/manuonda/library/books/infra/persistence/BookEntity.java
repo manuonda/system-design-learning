@@ -1,6 +1,6 @@
 package com.manuonda.library.books.infra.persistence;
 
-import com.manuonda.library.shared.BaseEntity;
+import com.manuonda.library.shared.infra.BaseEntity;
 import jakarta.persistence.*;
 
 

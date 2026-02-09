@@ -59,7 +59,7 @@ public class BookService {
                 CopiesCount.parse(request.copies())
         );
 
-        this.bookRepository.save(book);
+        this.bookRepository.create(book);
         this.domainEventPublisher.publish(book.pullDomainEvents());
         return toResponse(book);
     }
@@ -91,7 +91,7 @@ public class BookService {
                 CopiesCount.parse(request.copies())
         );
 
-        this.bookRepository.save(book);
+        this.bookRepository.update(book);
         this.domainEventPublisher.publish(book.pullDomainEvents());
         return toResponse(book);
 
@@ -109,6 +109,38 @@ public class BookService {
         );
         PagedResult<Book> books = this.bookRepository.searchBooks(bookSearchCriteria);
         return PagedResult.of(books, this::toResponse);
+    }
+
+    /**
+     * Borrow a copy of a book
+     * @param isbn the ISBN of the book to borrow
+     * @return the updated book
+     */
+    public BookResponse borrowBook(String isbn) {
+        Book book = this.bookRepository.findByIsbn(isbn)
+                .orElseThrow(() -> new BookNotFoundException(isbn));
+
+        book.borrowCopy();
+
+        this.bookRepository.update(book);
+        this.domainEventPublisher.publish(book.pullDomainEvents());
+        return toResponse(book);
+    }
+
+    /**
+     * Return a copy of a book
+     * @param isbn the ISBN of the book to return
+     * @return the updated book
+     */
+    public BookResponse returnBook(String isbn) {
+        Book book = this.bookRepository.findByIsbn(isbn)
+                .orElseThrow(() -> new BookNotFoundException(isbn));
+
+        book.returnCopy();
+
+        this.bookRepository.update(book);
+        this.domainEventPublisher.publish(book.pullDomainEvents());
+        return toResponse(book);
     }
 
     /**

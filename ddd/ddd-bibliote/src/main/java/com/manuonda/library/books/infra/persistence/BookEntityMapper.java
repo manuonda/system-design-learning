@@ -22,7 +22,7 @@ public class BookEntityMapper {
         );
     }
 
-    // Domain -> Entity
+    // Domain -> Entity (new)
     public static BookEntity toEntity(Book book) {
         return new BookEntity(
                 book.getIsbn().isbn(),
@@ -30,5 +30,13 @@ public class BookEntityMapper {
                 book.getAuthor().author(),
                 book.getCopiesCount().value()
         );
+    }
+
+    // Domain -> Entity (existing)
+    public static void updateEntity(BookEntity entity, Book book) {
+        entity.setIsbn(book.getIsbn().isbn());
+        entity.setTitle(book.getTitle().title());
+        entity.setAuthor(book.getAuthor().author());
+        entity.setCopies(book.getCopiesCount().value());
     }
 }
