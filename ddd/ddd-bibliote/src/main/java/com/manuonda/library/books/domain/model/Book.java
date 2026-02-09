@@ -44,8 +44,8 @@ public class Book extends AggregateRoot {
 
 
     /**
-     * Factory method to reconstitute a book from the persistence
-     * Does NOT register events
+     * Factory method to create a new book
+     * Registers an AddBookEvent
      * @param title
      * @param isbn
      * @param author
@@ -84,6 +84,18 @@ public class Book extends AggregateRoot {
      
     }
 
+    /**
+     * Factory method to reconstitute a book from persistence
+     * Does NOT register events
+     * @param title
+     * @param isbn
+     * @param author
+     * @param copiesCount
+     * @return
+     */
+    public static Book reconstitute(BookTitle title, ISBN isbn, Author author, CopiesCount copiesCount) {
+        return new Book(title, isbn, author, copiesCount);
+    }
     // Business rule: a book is available if it has at least one copy
     public boolean isAvailable(){
         return this.copiesCount.value() > 0 ;
@@ -91,7 +103,7 @@ public class Book extends AggregateRoot {
 
     /**
      * Business rule : Borrow a copy of this book
-     * Increments the copies count by 1
+     * Decrements the copies count by 1
      * Publishes a BookBorrowedEvent
      */
     public void borrowCopy(){

@@ -2,6 +2,10 @@ package com.manuonda.library.books.domain.vo;
 
 import com.manuonda.library.shared.AssertUtil;
 
+/**
+ * Value Object representing a book author.
+ * @param author the author name
+ */
 public record Author(String author) {
 
     public Author{

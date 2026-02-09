@@ -7,6 +7,8 @@ public record AddBookRequest(
         String isbn,
         @NotNull(message = "The title is not empty")
         String title,
+        @NotNull(message = "The author is not empty")
         String author,
+        @NotNull(message = "The copies is not empty")
         Integer copies) {
 }

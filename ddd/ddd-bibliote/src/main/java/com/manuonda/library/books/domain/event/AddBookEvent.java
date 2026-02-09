@@ -9,5 +9,5 @@ import com.manuonda.library.shared.DomainEvent;
  * @since 1.0
  * @date 1/2/2026
  */
-public record AddBookEvent(String isbn, String title, String author, Integer copies) implements DomainEvent {
+public record AddBookEvent(String isbn, String title, String author, Integer copiesCount) implements DomainEvent {
 }

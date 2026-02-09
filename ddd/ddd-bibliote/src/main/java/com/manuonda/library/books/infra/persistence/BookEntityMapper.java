@@ -14,7 +14,7 @@ public class BookEntityMapper {
 
     // Entity  -> Domain
     public static Book toDomain(BookEntity bookEntity) {
-        return new Book(
+        return Book.reconstitute(
                 BookTitle.parse(bookEntity.getTitle()),
                 ISBN.parse(bookEntity.getIsbn()),
                 Author.parse(bookEntity.getAuthor()),
@@ -25,8 +25,8 @@ public class BookEntityMapper {
     // Domain -> Entity
     public static BookEntity toEntity(Book book) {
         return new BookEntity(
-                book.getTitle().title(),
                 book.getIsbn().isbn(),
+                book.getTitle().title(),
                 book.getAuthor().author(),
                 book.getCopiesCount().value()
         );

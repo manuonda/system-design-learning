@@ -5,7 +5,7 @@ import com.manuonda.library.shared.DomainEvent;
 /**
  * Book Returned Copy Event
  * @param isbn
- * @param value
+ * @param copiesCount
  */
-public record BookReturnedCopyEvent(String isbn, Integer value) implements DomainEvent {
+public record BookReturnedCopyEvent(String isbn, Integer copiesCount) implements DomainEvent {
 }

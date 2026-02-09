@@ -35,7 +35,13 @@ public class BookRepositoryAdapter implements BookRepository {
     public void save(Book book) {
      Optional<BookEntity> bookExisting = this.jpaBookRepository.findByIsbn(book.getIsbn().isbn());
      if (bookExisting.isPresent()) {
-         jpaBookRepository.save(bookExisting.get());
+         BookEntity bookEntity = bookExisting.get();
+         bookEntity.setIsbn(book.getIsbn().isbn());
+         bookEntity.setTitle(book.getTitle().title());
+         bookEntity.setAuthor(book.getAuthor().author());
+         bookEntity.setCopies(book.getCopiesCount().value());
+
+         jpaBookRepository.save(bookEntity);
      } else {
          BookEntity entity = BookEntityMapper.toEntity(book);
          jpaBookRepository.save(entity);

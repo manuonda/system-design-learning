@@ -59,8 +59,8 @@ public class BookService {
                 CopiesCount.parse(request.copies())
         );
 
-        Book bookSaved = this.bookRepository.save(book);
-        this.domainEventPublisher.publish(bookSaved.pullDomainEvents());
+        this.bookRepository.save(book);
+        this.domainEventPublisher.publish(book.pullDomainEvents());
         return toResponse(book);
     }
 

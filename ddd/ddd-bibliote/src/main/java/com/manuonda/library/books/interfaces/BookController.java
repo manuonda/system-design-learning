@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api/books")
 @Tag(name = "Books", description = "API para gestión de libros")
 public class BookController {
 
@@ -40,6 +40,22 @@ public class BookController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Actualizar un libro", description = "Actualiza un libro existente por ISBN")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Libro actualizado exitosamente",
+                    content = @Content(schema = @Schema(implementation = BookResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Libro no encontrado", content = @Content),
+            @ApiResponse(responseCode = "409", description = "ISBN duplicado", content = @Content)
+    })
+    @PutMapping("/{isbn}")
+    public ResponseEntity<BookResponse> updateBook(
+            @PathVariable String isbn,
+            @RequestBody AddBookRequest request) {
+        BookResponse response = bookService.updateBook(isbn, request);
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "Buscar libros", description = "Busca libros con filtro por ISBN paginado")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de libros encontrados"),
@@ -47,8 +63,11 @@ public class BookController {
     })
     @GetMapping("/list")
     public ResponseEntity<PagedResult<BookResponse>> getAllBooks(
-            @RequestBody BookFilterRequest request
+            @RequestParam(required = false) String isbn,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
             ) {
+        BookFilterRequest request = new BookFilterRequest(isbn, page, size);
         PagedResult<BookResponse> responses = bookService.searchBooks(request);
         return ResponseEntity.ok(responses);
     }

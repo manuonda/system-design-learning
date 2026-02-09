@@ -13,7 +13,7 @@ import java.time.Instant;
 
 
 /**
- * Base Entity Auditory
+ * Base Entity with Audit Metadata
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
