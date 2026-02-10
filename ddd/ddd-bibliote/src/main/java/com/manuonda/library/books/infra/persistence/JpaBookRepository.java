@@ -22,7 +22,7 @@ public interface JpaBookRepository extends JpaRepository<BookEntity, Long> {
     @Query(
             """
             Select b From BookEntity b
-            WHERE(:isbn is null or b.isbn LIKE CONCAT('%',:isbn, '%'))
+            WHERE(CAST(:isbn AS string) is null or b.isbn LIKE CONCAT('%', CAST(:isbn AS string), '%'))
             """
     )
     Page<BookEntity> searchBooks(@Param("isbn") String isbn, Pageable pageable);

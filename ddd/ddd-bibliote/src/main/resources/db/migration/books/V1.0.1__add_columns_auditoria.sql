@@ -1,0 +1,2 @@
+ALTER TABLE books ADD COLUMN created_at TIMESTAMP ;
+ALTER TABLE books ADD COLUMN updated_at TIMESTAMP ;

@@ -46,6 +46,19 @@ public class BookHandlerException {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        logger.error("Invalid argument: {}", ex.getMessage());
+        ApiErrorResponse response = new ApiErrorResponse(
+                "INVALID_ARGUMENT",
+                ex.getMessage(),
+                LocalDateTime.now(),
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @ExceptionHandler(BookNotAvailableException.class)
     public ResponseEntity<ApiErrorResponse> handleBookNotAvailable(BookNotAvailableException ex, HttpServletRequest request) {
         logger.error("Book not available: {}", ex.getMessage());
