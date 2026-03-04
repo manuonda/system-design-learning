@@ -8,7 +8,7 @@ import com.manuonda.library.shared.AggregateRoot;
 import org.hibernate.sql.results.graph.embeddable.AggregateEmbeddableResultGraphNode;
 
 /**
- * Class Member:
+ * Class Member: Referente a un miembro de la biblioteca
  * @author dgarcia
  * @version 1.0
  */
@@ -19,21 +19,23 @@ public class Member extends AggregateRoot {
     private MemberName memberName;
     private String phoneNumber;
 
-
-
-    public void setMemberId(MemberId memberId) {
-        this.memberId = memberId;
+    public MemberId getMemberId() {
+        return memberId;
     }
 
-    public void setEmail(Email email) {
-        this.email = email;
+    public MemberName getMemberName() {
+        return memberName;
     }
 
-    public void setMemberName(MemberName memberName) {
-        this.memberName = memberName;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public Email getEmail() {
+        return email;
     }
+
+
+
+
 }
