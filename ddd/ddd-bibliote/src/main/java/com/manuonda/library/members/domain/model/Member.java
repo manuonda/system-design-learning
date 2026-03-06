@@ -36,6 +36,7 @@ public class Member extends AggregateRoot {
     }
 
 
+    private void created(Member)
 
 
 }
