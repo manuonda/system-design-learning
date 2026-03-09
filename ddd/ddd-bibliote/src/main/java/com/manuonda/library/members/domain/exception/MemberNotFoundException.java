@@ -5,6 +5,6 @@ import com.manuonda.library.shared.DomainException;
 
 public class MemberNotFoundException extends DomainException {
     public MemberNotFoundException(MemberId memberId) {
-        super("Member with ID " + memberId.id() + " not found.");
+        super("Member with ID " + memberId.value() + " not found.");
     }
 }
