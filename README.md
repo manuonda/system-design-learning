@@ -15,6 +15,10 @@ System design is the process of defining the architecture, components, modules, 
 
 **[Parking Lot System(English)](./ood/parking-lot/Readme.md)** | **[Parking Lot System(Spanish)](./ood/parking-lot/Readme.sp.md)**
 
+### Architecture Hexagonal
+
+**[Hexagonal Architecture Basic (English)](./architecture/hexagonal-demo/README.en.md)**
+
 ### Applications 
 
 **[Short URL(English)](./short-url/Readme.md)** | **[Short URL(Spanish)](./short-url/Readme.sp.md)**

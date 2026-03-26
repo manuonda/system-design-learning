@@ -13,6 +13,9 @@ El diseño de sistemas es el proceso de definir la arquitectura, componentes, m�
 ### OOD(Object-Oriented Design)
 **[Parking Lot System(English)](./ood/parking-lot/README.md)** | **[Parking Lot System(Spanish)](./ood/parking-lot/README.es.md)**
 
+### Arquitectura hexagonal
+[Arquitectura hexagonal básica (Español)](./architecture/hexagonal-demo/README.sp.md)
+
 ### Applications 
 **[Short URL(Ingles)](./short-url/README.md)** | **[Short URL(Spanish)](./short-url/README.es.md)**
 
