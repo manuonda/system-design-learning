@@ -4,6 +4,22 @@ Proyecto de demostración de **Arquitectura Hexagonal** (Ports & Adapters) con S
 
 ---
 
+## Instalación y compilación
+
+Desde la raíz del proyecto (donde está `pom.xml`):
+
+```bash
+mvn clean install -DskipTests
+```
+
+## Ejecución
+
+```bash
+./mvnw spring-boot:run
+```
+
+---
+
 ## Que es la Arquitectura Hexagonal
 
 La Arquitectura Hexagonal, también llamada **Ports & Adapters**, fue propuesta por Alistair Cockburn. Su objetivo principal es **aislar el núcleo de negocio** de los detalles tecnológicos externos (bases de datos, frameworks, mensajería, APIs REST, etc.).

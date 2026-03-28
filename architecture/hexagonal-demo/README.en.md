@@ -4,6 +4,22 @@ Demonstration project of **Hexagonal Architecture** (Ports & Adapters) with Spri
 
 ---
 
+## Installation and build
+
+From the project root (where `pom.xml` is):
+
+```bash
+mvn clean install -DskipTests
+```
+
+## Run
+
+```bash
+./mvnw spring-boot:run
+```
+
+---
+
 ## What is Hexagonal Architecture
 
 Hexagonal Architecture, also known as **Ports & Adapters**, was proposed by Alistair Cockburn. Its main goal is to **isolate the business core** from external technological details (databases, frameworks, messaging, REST APIs, etc.).
