@@ -1,6 +1,6 @@
 # System Design Learning
 
-Version in **[🇪 Español](README.es.md)** 
+Version in **[🇪 Español](README.sp.md)** 
 
 A comprehensive repository for learning system design concepts through practical implementations and real-world examples.
 
@@ -18,6 +18,12 @@ System design is the process of defining the architecture, components, modules, 
 ### Applications 
 
 **[Short URL(English)](./short-url/Readme.md)** | **[Short URL(Spanish)](./short-url/Readme.sp.md)**
+
+### Spring Boot 4 — Dan Vega features
+
+Sample projects inspired by **Dan Vega**’s Spring Boot 4 material: declarative HTTP with **`RestClient`**, error mapping, and resilience.
+
+**[HTTP client & RestClient (English)](./spring-boot-4/features-dan-vega/manejo-http-client/README.md)** | **[HTTP client & RestClient (Spanish)](./spring-boot-4/features-dan-vega/manejo-http-client/README.sp.md)**
 
 
 ## Resources
