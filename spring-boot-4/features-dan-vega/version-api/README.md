@@ -1,4 +1,4 @@
-****# API Versioning en Spring Boot 4
+********# API Versioning en Spring Boot 4
 
 > Proyecto de aprendizaje basado en las nuevas capacidades nativas de versionamiento de API introducidas en **Spring Framework 7** y **Spring Boot 4**, inspirado en el trabajo de [Dan Vega](https://www.danvega.dev/).
 
