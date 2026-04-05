@@ -1,0 +1,49 @@
+package de.rieckpil.courses.config;
+
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableMethodSecurity
+public class WebSecurityConfig {
+
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
+    httpSecurity
+        .authorizeHttpRequests(
+            authorize ->
+                authorize
+                    .requestMatchers(HttpMethod.GET, "/api/books")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/books/reviews")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/config")
+                    .permitAll()
+                    .requestMatchers("/api/**")
+                    .authenticated()
+                    .requestMatchers(EndpointRequest.to(HealthEndpoint.class))
+                    .permitAll()
+                    .anyRequest()
+                    .permitAll())
+        .sessionManagement(
+            sessionManagement ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .cors(Customizer.withDefaults())
+        .csrf(AbstractHttpConfigurer::disable)
+        .oauth2ResourceServer(
+            oauth2 ->
+                oauth2.jwt(
+                    jwt -> jwt.jwtAuthenticationConverter(new CustomAuthenticationConverter())));
+
+    return httpSecurity.build();
+  }
+}

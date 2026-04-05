@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    password: test
+    username: test
+    url: jdbc:postgresql://localhost:5432/postgres
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: OVERRIDEN_BY_TEST
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    aws:
+      region:
+        static: eu-central-1
+
+keycloak:
+  auth-server-url: http://host.testcontainers.internal:8888/auth
+
+clients:
+  open-library:
+    base-url: OVERRIDEN_BY_TEST
+
+sqs:
+  book-synchronization-queue: default

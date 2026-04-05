@@ -1,0 +1,19 @@
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+  <!-- Noisy logs when shutting down the context, connection refuse messages for LocalStack⁄ -->
+  <logger name="io.awspring.cloud.sqs.listener.source" level="OFF"/>
+
+  <logger name="org.springframework.security" level="INFO"/>
+
+  <!-- Noisy logs when running web test -->
+  <logger name="org.openqa.selenium.remote.tracing.opentelemetry" level="WARN"/>
+
+  <!-- Noisy logs when running test from the ProfileFileReader -->
+  <logger name="software.amazon.awssdk.profiles.internal" level="ERROR"/>
+</configuration>
