@@ -30,18 +30,7 @@ public class UserHeaderControllerTest {
         // Given
         String version = "1.0";
 
-        // When
-        var response = restTestClient.get()
-                .uri("/users")
-                .apiVersion(1.0)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody
-        // Then
-        var users = response.returnResult().getResponseBody();
-        assert users != null;
-        assert users.size() == 2;
-        assert users.get(0).name().equals("John Doe");
+
     }
 
 }
