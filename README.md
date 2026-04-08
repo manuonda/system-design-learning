@@ -25,9 +25,11 @@ System design is the process of defining the architecture, components, modules, 
 
 ### Spring Boot 4 — Dan Vega features
 
-Sample projects inspired by **Dan Vega**’s Spring Boot 4 material: declarative HTTP with **`RestClient`**, error mapping, and resilience.
+Sample projects inspired by **Dan Vega**’s Spring Boot 4 material: declarative HTTP with **`RestClient`**, error mapping, resilience, and API versioning.
 
 **[HTTP client & RestClient (English)](./spring-boot-4/features-dan-vega/manejo-http-client/README.md)** | **[HTTP client & RestClient (Spanish)](./spring-boot-4/features-dan-vega/manejo-http-client/README.sp.md)**
+
+**[Version API (English)](./spring-boot-4/features-dan-vega/version-api/README.md)** | **[Version API (Spanish)](./spring-boot-4/features-dan-vega/version-api/Readme.sp.md)**
 
 
 ## Resources

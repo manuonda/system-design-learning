@@ -21,9 +21,11 @@ El diseño de sistemas es el proceso de definir la arquitectura, componentes, m�
 
 ### Spring Boot 4 — Características (Dan Vega)
 
-Proyectos de ejemplo basados en el material de **Dan Vega** sobre Spring Boot 4: HTTP declarativo con **`RestClient`**, manejo de errores y resiliencia.
+Proyectos de ejemplo basados en el material de **Dan Vega** sobre Spring Boot 4: HTTP declarativo con **`RestClient`**, manejo de errores, resiliencia y versionado de API.
 
 **[HTTP client y RestClient (Inglés)](./spring-boot-4/features-dan-vega/manejo-http-client/README.md)** | **[HTTP client y RestClient (Español)](./spring-boot-4/features-dan-vega/manejo-http-client/README.sp.md)**
+
+**[Version API (Inglés)](./spring-boot-4/features-dan-vega/version-api/README.md)** | **[Version API (Español)](./spring-boot-4/features-dan-vega/version-api/Readme.sp.md)**
 
 
 ## Recursos
