@@ -1,6 +1,4 @@
-package com.hexagonal.records;
-
-import java.util.Locale;
+package com.java.practice.records;
 
 record Temperature(double value, String unit) {
     // compact constructor

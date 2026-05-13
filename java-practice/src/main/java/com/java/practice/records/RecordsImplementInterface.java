@@ -1,4 +1,4 @@
-package com.hexagonal.records;
+package com.java.practice.records;
 
 
 interface Describable {
