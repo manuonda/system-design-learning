@@ -1,0 +1,19 @@
+spring:
+  application:
+    name:
+
+blog-agent:
+  output-dir: blog-posts
+
+embabel:
+  agent:
+    platform:
+      models:
+        openai:
+          api-key: ${OPENAI_API_KEY}
+  models:
+    default-llm: gpt-4.1-mini
+    llms:
+      reviewer: gpt-4.1-mini
+
+
