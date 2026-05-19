@@ -15,9 +15,9 @@ System design is the process of defining the architecture, components, modules, 
 
 **[Parking Lot System(English)](./ood/parking-lot/Readme.md)** | **[Parking Lot System(Spanish)](./ood/parking-lot/Readme.sp.md)**
 
-### Architecture Hexagonal
+### Hexagonal Architecture
 
-**[Hexagonal Architecture Basic (English)](./architecture/hexagonal-demo/README.en.md)**
+**[Architecture overview (English)](./architecture/README.md)** | **[Visión general (Español)](./architecture/README.sp.md)**
 
 ### Applications 
 
@@ -30,6 +30,10 @@ Sample projects inspired by **Dan Vega**’s Spring Boot 4 material: declarative
 **[HTTP client & RestClient (English)](./spring-boot-4/features-dan-vega/manejo-http-client/README.md)** | **[HTTP client & RestClient (Spanish)](./spring-boot-4/features-dan-vega/manejo-http-client/README.sp.md)**
 
 **[Version API (English)](./spring-boot-4/features-dan-vega/version-api/README.md)** | **[Version API (Spanish)](./spring-boot-4/features-dan-vega/version-api/Readme.sp.md)**
+
+### AI — Embabel Agents
+
+**[Embabel overview (English)](./ia/embabel/README.md)** | **[Visión general Embabel (Español)](./ia/embabel/README.sp.md)**
 
 
 ## Resources

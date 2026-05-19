@@ -1,4 +1,8 @@
-# Hexagonal Architecture Demo
+# Hexagonal Architecture Demo — Posts
+
+Versión en **[🇺🇸 English](README.md)**
+
+Demo con Spring Boot + Java 21 para crear y listar posts. Incluye diagramas ASCII de arquitectura, flujos de peticiones, reglas de dependencia y ejemplos con curl.
 
 Proyecto de demostración de **Arquitectura Hexagonal** (Ports & Adapters) con Spring Boot y Java 21.
 
@@ -373,3 +377,9 @@ src/main/resources/
 - **Intercambiabilidad**: se puede cambiar JPA por MongoDB sin tocar la lógica de negocio, solo reemplazando el adaptador.
 - **Independencia de frameworks**: el negocio no conoce Spring.
 - **Claridad**: cada clase tiene un rol claro y una ubicacion predecible.
+
+---
+
+## Volver a Arquitectura
+
+**[Visión general (Español)](../../README.sp.md)** | **[Architecture overview (English)](../../README.md)**

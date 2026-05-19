@@ -14,7 +14,8 @@ El diseño de sistemas es el proceso de definir la arquitectura, componentes, m�
 **[Parking Lot System(English)](./ood/parking-lot/README.md)** | **[Parking Lot System(Spanish)](./ood/parking-lot/README.es.md)**
 
 ### Arquitectura hexagonal
-[Arquitectura hexagonal básica (Español)](./architecture/hexagonal-demo/README.sp.md)
+
+**[Visión general (Español)](./architecture/README.sp.md)** | **[Architecture overview (English)](./architecture/README.md)**
 
 ### Applications 
 **[Short URL(Ingles)](./short-url/README.md)** | **[Short URL(Spanish)](./short-url/README.es.md)**
@@ -26,6 +27,10 @@ Proyectos de ejemplo basados en el material de **Dan Vega** sobre Spring Boot 4:
 **[HTTP client y RestClient (Inglés)](./spring-boot-4/features-dan-vega/manejo-http-client/README.md)** | **[HTTP client y RestClient (Español)](./spring-boot-4/features-dan-vega/manejo-http-client/README.sp.md)**
 
 **[Version API (Inglés)](./spring-boot-4/features-dan-vega/version-api/README.md)** | **[Version API (Español)](./spring-boot-4/features-dan-vega/version-api/Readme.sp.md)**
+
+### IA — Agentes Embabel
+
+**[Visión general Embabel (Español)](./ia/embabel/README.sp.md)** | **[Embabel overview (English)](./ia/embabel/README.md)**
 
 
 ## Recursos
