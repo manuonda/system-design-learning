@@ -6,6 +6,10 @@ Demo con Spring Boot + Java 21 para crear y listar posts. Incluye diagramas ASCI
 
 Proyecto de demostración de **Arquitectura Hexagonal** (Ports & Adapters) con Spring Boot y Java 21.
 
+## Video de referencia
+
+[¡Domina la Arquitectura Hexagonal con JAVA y SPRING! En 10 MINUTOS](https://www.youtube.com/watch?v=PcoeGzGomqs) — Programando en JAVA
+
 ---
 
 ## Instalación y compilación
