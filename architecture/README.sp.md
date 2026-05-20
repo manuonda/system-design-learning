@@ -54,9 +54,8 @@ Ruta sugerida: comienza con **hexagonal-demo** (diagramas completos y ejemplos c
 
 | Recurso | Enlace |
 |---|---|
-| Embabel Agent — Rod Johnson (autor) | [Video de YouTube](https://www.youtube.com/watch?v=RDNrCz4EiFI) |
-| Embabel GitHub | [github.com/embabel/embabel-agent](https://github.com/embabel/embabel-agent) |
-| Guía de usuario Embabel | [docs.embabel.com/embabel-agent/guide/0.5.0-SNAPSHOT/](https://docs.embabel.com/embabel-agent/guide/0.5.0-SNAPSHOT/) |
+| Arquitectura Hexagonal con Java y Spring (10 min) — *hexagonal-demo* | [Programando en JAVA](https://www.youtube.com/watch?v=PcoeGzGomqs) |
+| Arquitectura Hexagonal + Spring Boot: Diseño Limpio — *hexagonal-demo-two* | [Daniel Españadero — Nerdearla](https://www.youtube.com/watch?v=7MXjgfyTnYQ) |
 
 ---
 

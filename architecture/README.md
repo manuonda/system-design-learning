@@ -54,9 +54,8 @@ Suggested learning path: start with **hexagonal-demo** (full diagrams and curl e
 
 | Resource | Link |
 |---|---|
-| Embabel Agent — Rod Johnson (author) | [YouTube video](https://www.youtube.com/watch?v=RDNrCz4EiFI) |
-| Embabel GitHub | [github.com/embabel/embabel-agent](https://github.com/embabel/embabel-agent) |
-| Embabel User Guide | [docs.embabel.com/embabel-agent/guide/0.5.0-SNAPSHOT/](https://docs.embabel.com/embabel-agent/guide/0.5.0-SNAPSHOT/) |
+| Hexagonal Architecture with Java & Spring (10 min) — *hexagonal-demo* | [Programando en JAVA](https://www.youtube.com/watch?v=PcoeGzGomqs) |
+| Hexagonal Architecture + Spring Boot: Clean Design — *hexagonal-demo-two* | [Daniel Españadero — Nerdearla](https://www.youtube.com/watch?v=7MXjgfyTnYQ) |
 
 ---
 
