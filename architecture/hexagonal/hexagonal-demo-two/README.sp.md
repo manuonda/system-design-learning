@@ -4,6 +4,10 @@ Versión en **[🇺🇸 English](README.md)**
 
 API REST para registrar y consultar usuarios. Mismos principios hexagonales con puertos organizados bajo `application/port/in` y `application/port/out`.
 
+## Video de referencia
+
+[Arquitectura Hexagonal + Spring Boot: Domina el Diseño Limpio](https://www.youtube.com/watch?v=7MXjgfyTnYQ) — Daniel Españadero, Nerdearla
+
 ---
 
 ## Estructura del proyecto
