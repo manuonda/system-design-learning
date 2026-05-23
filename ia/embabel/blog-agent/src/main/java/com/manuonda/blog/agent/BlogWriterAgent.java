@@ -73,6 +73,44 @@ public class BlogWriterAgent {
      return reviewedPost;
     }
 
+
+    @Action(description = "Add A TLDR suumary to the top of the blog post")
+    public FinalPost addTldr(ReviewedPost post, Ai ai) {
+             String tldr = ai.withDefaultLlm().withId("blog-post-tldr-generator")
+                     .creating(String.class)
+                     .fromPrompt("""
+                             Write a one or two sentence TLDR summary for this blog post:
+                             Return only the summary, no other text.
+                             
+                             Title: %s
+                             Content:
+                             %s
+                             """.formatted(post.title(), post.content()));
+             String contentWtihTldr = "> ** TLDR: ** " + tldr + "\n\n" +  post.content();
+             return new FinalPost(post.title(), contentWtihTldr, post.content());
+    }
+
+    @Action(description = "Add front matter to the top of the blog post")
+    public PublishedPost(FinalPost post, Ai ai) {
+          FrontMatter frontMatter = ai
+                  .withDefaultLlm()
+                  .
+                  .withId("blog-post-draft-writer")
+                .withPromptContributor(Personas.WRITER)
+                . creating(BlogDraft.class)
+                .fromPrompt("""
+                     You are a software developer an educator writing a blog post.
+                     Write a blog post about: %s
+                     
+                     Keep it practical and beginner friendly
+                     Use short sentences and plain language.
+                     Include code examples but keep them short and simple.
+                     Writen the content in Markdown.
+                     
+                     """.formatted(userInput.getContent())
+                );
+    }
+
     private void writeToFile(ReviewedPost post) {
         String filename = post.title()
                 .toLowerCase()
