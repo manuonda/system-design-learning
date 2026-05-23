@@ -11,6 +11,8 @@ embabel:
       models:
         openai:
           api-key: ${OPENAI_API_KEY}
+    logging:
+      personality: starwars
   models:
     default-llm: gpt-4.1-mini
     llms:
