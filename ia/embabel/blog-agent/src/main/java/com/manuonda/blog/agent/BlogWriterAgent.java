@@ -17,10 +17,13 @@ import java.nio.file.Path;
 public class BlogWriterAgent {
 
     private Logger log = LoggerFactory.getLogger(BlogWriterAgent.class);
-    private final  BlogAgentProperties properties;
 
-    public BlogWriterAgent(BlogAgentProperties props) {
+    private final  BlogAgentProperties properties;
+    private final ReadingStatsTools readingStatsTools;
+
+    public BlogWriterAgent(BlogAgentProperties props, ReadingStatsTools readingStatsTools) {
         this.properties = props;
+        this.readingStatsTools = readingStatsTools;
     }
 
 
