@@ -1,9 +1,21 @@
 spring:
   application:
     name:
+  ai:
+    mcp:
+      client:
+        stdio:
+          connections:
+            wikipedia-mcp:
+              command: uvx
+              args:
+                - --from
+                - wikipedia-mcp-server
+                - wikipedia-mcp
 
 blog-agent:
   output-dir: blog-posts
+  number-of-keywords: 5
 
 embabel:
   agent:
