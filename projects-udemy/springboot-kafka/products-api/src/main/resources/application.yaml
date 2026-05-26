@@ -1,0 +1,20 @@
+
+
+spring:
+  application:
+    name: productos-api
+
+  #Direction del broker kafka
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+      bindings: # binding logico usado en StreamBridge.send("commands-out-0", ...)
+        commands-out-0:
+          destination: products.commands   # topic real en Kafka
+          content-type: application/json   # serializa Command<T> a JSON
+
+server:
+  port: 8081
+
