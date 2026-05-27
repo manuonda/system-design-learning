@@ -23,6 +23,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     @Override
     public void sendCreate(ProductDto productDto) {
         Command<ProductDto> cmd = new Command<>("CREATE", null, productDto);
+        //envio al topic para almacenar el mensaje
         boolean send = this.streamBridge.send(BINDING_NAME, cmd);
 
         if (!send) {
