@@ -19,6 +19,8 @@ public class ProductsCommandConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(ProductsCommandConsumer.class);
 
+    // Bean que define un consumidor de comandos para productos.
+    // Este consumidor recibe comandos de tipo Command<ProductDto>
     @Bean
     public Consumer<Command<ProductDto>>  handleCommands(){
      return command ->{
