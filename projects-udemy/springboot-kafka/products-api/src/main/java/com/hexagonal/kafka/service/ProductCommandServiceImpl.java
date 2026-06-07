@@ -13,6 +13,8 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     // Nombre del binding definido en application.yaml → commands-out-0.destination=products.commands
     private static final String BINDING_NAME = "commands-out-0";
 
+    // StreamBridge es un componente de Spring Cloud Stream 
+    // que permite enviar mensajes a Kafka desde cualquier clase sin usar Supplier<T>
     private final StreamBridge streamBridge;
 
     public ProductCommandServiceImpl(StreamBridge streamBridge) {

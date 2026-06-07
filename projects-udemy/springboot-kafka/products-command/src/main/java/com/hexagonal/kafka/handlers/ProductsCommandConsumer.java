@@ -24,7 +24,7 @@ public class ProductsCommandConsumer {
     @Bean
     public Consumer<Command<ProductDto>>  handleCommands(){
      return command ->{
-          log.info(String.format("Received command con type={}, id={}, body={}", command.type(), command.id(), command.body()));
+          log.info("Received command con type={}, id={}, body={}", command.type(), command.id(), command.body());
            // Aquí se implementaría la lógica para manejar el comando, por ejemplo, llamar a un
      };
     }
