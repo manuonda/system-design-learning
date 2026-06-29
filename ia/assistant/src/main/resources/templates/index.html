@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Spring AI Chat</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f4f4f8;
+            color: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #111;
+            letter-spacing: -0.3px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 720px;
+            background: #ffffff;
+            border: 1px solid #dcdce8;
+            border-radius: 14px;
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* Toggle */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toggle-label { font-size: 0.85rem; color: #777; }
+
+        .toggle-track {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            background: #d0d0e0;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.25s;
+        }
+
+        .toggle-track.active { background: #6c63ff; }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.25s;
+        }
+
+        .toggle-track.active .toggle-thumb { transform: translateX(24px); }
+
+        .mode-badge {
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 99px;
+            background: #e8e8f0;
+            color: #666;
+            transition: background 0.25s, color 0.25s;
+        }
+
+        .mode-badge.stream { background: #6c63ff22; color: #5a52d5; }
+
+        /* Input area */
+        .input-row {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            background: #f9f9fc;
+            border: 1px solid #dcdce8;
+            border-radius: 12px;
+            color: #1a1a2e;
+            font-size: 0.95rem;
+            padding: 0.8rem 1rem 2.8rem 1rem;
+            resize: none;
+            min-height: 80px;
+            max-height: 260px;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: inherit;
+            overflow-y: auto;
+            display: block;
+        }
+
+        textarea:focus { border-color: #6c63ff; }
+
+        button#send-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #6c63ff;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        button#send-btn:hover { background: #7c75ff; }
+        button#send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        button#send-btn svg { display: block; }
+
+        /* Response box */
+        .response-wrapper {
+            position: relative;
+        }
+
+        #response {
+            background: #f9f9fc;
+            border: 1px solid #dcdce8;
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            font-size: 0.93rem;
+            line-height: 1.65;
+            min-height: 160px;
+            word-break: break-word;
+            color: #1a1a2e;
+            overflow-y: auto;
+            max-height: 420px;
+        }
+
+        #response.placeholder {
+            color: #aaa;
+            font-style: italic;
+        }
+
+        /* Markdown styles */
+        #response p { margin-bottom: 0.75rem; }
+        #response p:last-child { margin-bottom: 0; }
+
+        #response strong { font-weight: 600; color: #111; }
+        #response em { font-style: italic; color: #444; }
+
+        #response ul, #response ol {
+            padding-left: 1.4rem;
+            margin-bottom: 0.75rem;
+        }
+
+        #response li { margin-bottom: 0.3rem; }
+
+        #response h1, #response h2, #response h3 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            margin-top: 0.75rem;
+            color: #111;
+        }
+
+        #response h1 { font-size: 1.2rem; }
+        #response h2 { font-size: 1.05rem; }
+        #response h3 { font-size: 0.97rem; }
+
+        #response code {
+            background: #ededf5;
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+            font-size: 0.88em;
+            font-family: "Fira Code", "Cascadia Code", monospace;
+            color: #5a52d5;
+        }
+
+        #response pre {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin-bottom: 0.75rem;
+            font-size: 0.88em;
+        }
+
+        #response pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        #response blockquote {
+            border-left: 3px solid #6c63ff;
+            margin: 0.5rem 0;
+            padding: 0.4rem 0.75rem;
+            color: #555;
+            background: #f0effb;
+            border-radius: 0 6px 6px 0;
+        }
+
+        #response hr {
+            border: none;
+            border-top: 1px solid #dcdce8;
+            margin: 0.75rem 0;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: #6c63ff;
+            margin-left: 1px;
+            vertical-align: text-bottom;
+            animation: blink 0.8s step-end infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Status */
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: #999;
+        }
+
+        #status.loading { color: #6c63ff; }
+        #status.done    { color: #2db870; }
+        #status.error   { color: #e05555; }
+
+        button#clear-btn {
+            background: none;
+            border: 1px solid #dcdce8;
+            border-radius: 6px;
+            color: #888;
+            font-size: 0.78rem;
+            padding: 2px 10px;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        button#clear-btn:hover { color: #444; border-color: #aaa; }
+    </style>
+</head>
+<body>
+<h1>Spring AI Chat</h1>
+
+<div class="card">
+    <!-- Mode toggle -->
+    <div class="toggle-row">
+        <span class="toggle-label">Mode:</span>
+        <span id="mode-badge" class="mode-badge">Ask</span>
+        <div id="toggle" class="toggle-track" role="switch" aria-checked="false" tabindex="0">
+            <div class="toggle-thumb"></div>
+        </div>
+        <span class="toggle-label" id="toggle-hint">switch to streaming</span>
+    </div>
+
+    <!-- Question input -->
+    <div class="input-row">
+        <textarea id="question" placeholder="Ask something…" rows="3"></textarea>
+        <button id="send-btn" title="Send (Enter)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"/>
+                <polyline points="5 12 12 5 19 12"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Response -->
+    <div class="response-wrapper">
+        <div id="response" class="placeholder">Response will appear here…</div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-row">
+        <span id="status">Ready</span>
+        <button id="clear-btn">Clear</button>
+    </div>
+</div>
+
+<script>
+    marked.setOptions({ breaks: true, gfm: true });
+
+    const toggle     = document.getElementById('toggle');
+    const modeBadge  = document.getElementById('mode-badge');
+    const toggleHint = document.getElementById('toggle-hint');
+    const sendBtn    = document.getElementById('send-btn');
+    const clearBtn   = document.getElementById('clear-btn');
+    const questionEl = document.getElementById('question');
+    const responseEl = document.getElementById('response');
+    const statusEl   = document.getElementById('status');
+
+    let streamMode   = false;
+    let activeSource = null;
+
+    // --- toggle ---
+    function setMode(isStream) {
+        streamMode = isStream;
+        toggle.classList.toggle('active', isStream);
+        toggle.setAttribute('aria-checked', String(isStream));
+        modeBadge.textContent  = isStream ? 'Stream' : 'Ask';
+        modeBadge.className    = 'mode-badge' + (isStream ? ' stream' : '');
+        toggleHint.textContent = isStream ? 'switch to blocking' : 'switch to streaming';
+    }
+
+    toggle.addEventListener('click', () => setMode(!streamMode));
+    toggle.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') setMode(!streamMode); });
+
+    // --- helpers ---
+    function setStatus(text, cls) {
+        statusEl.textContent = text;
+        statusEl.className   = cls || '';
+    }
+
+    function clearResponse() {
+        responseEl.innerHTML  = '';
+        responseEl.className  = 'placeholder';
+        responseEl.textContent = 'Response will appear here…';
+        setStatus('Ready');
+    }
+
+    function startResponse() {
+        responseEl.className = '';
+        responseEl.innerHTML = '';
+    }
+
+    function renderMarkdown(text, withCursor) {
+        const html = marked.parse(text);
+        responseEl.innerHTML = withCursor
+            ? html + '<span class="cursor"></span>'
+            : html;
+        responseEl.scrollTop = responseEl.scrollHeight;
+    }
+
+    function setLock(locked) {
+        sendBtn.disabled    = locked;
+        questionEl.disabled = locked;
+    }
+
+    // --- ask (blocking) ---
+    async function doAsk(question) {
+        setLock(true);
+        setStatus('Waiting for response…', 'loading');
+        startResponse();
+
+        try {
+            const res = await fetch('/ask?message=' + encodeURIComponent(question));
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const text = await res.text();
+            renderMarkdown(text, false);
+            setStatus('Done', 'done');
+        } catch (err) {
+            responseEl.textContent = 'Error: ' + err.message;
+            setStatus('Error', 'error');
+        } finally {
+            setLock(false);
+        }
+    }
+
+    // --- stream (SSE) ---
+    function doStream(question) {
+        setLock(true);
+        setStatus('Streaming…', 'loading');
+        startResponse();
+
+        if (activeSource) { activeSource.close(); activeSource = null; }
+
+        let buffer = '';
+        const src  = new EventSource('/stream?message=' + encodeURIComponent(question));
+        activeSource = src;
+
+        src.onmessage = e => {
+            buffer += e.data;
+            renderMarkdown(buffer, true);
+        };
+
+        src.onerror = () => {
+            const hasContent = buffer.trim().length > 0;
+            src.close();
+            activeSource = null;
+            if (hasContent) {
+                renderMarkdown(buffer, false);
+                setStatus('Done', 'done');
+            } else {
+                responseEl.textContent = 'Stream error or no response received.';
+                setStatus('Error', 'error');
+            }
+            setLock(false);
+        };
+    }
+
+    // --- send ---
+    sendBtn.addEventListener('click', send);
+    questionEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+
+    function send() {
+        const q = questionEl.value.trim();
+        if (!q) return;
+        if (streamMode) doStream(q);
+        else            doAsk(q);
+    }
+
+    // --- clear ---
+    clearBtn.addEventListener('click', () => {
+        if (activeSource) { activeSource.close(); activeSource = null; }
+        setLock(false);
+        clearResponse();
+    });
+</script>
+</body>
+</html>
