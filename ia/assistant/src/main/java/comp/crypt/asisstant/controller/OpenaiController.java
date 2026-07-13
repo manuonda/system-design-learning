@@ -21,6 +21,11 @@ public class OpenaiController {
         return openaiService.ask(message);
     }
 
+    /**
+     * Stream module produce word by word
+     * @param message
+     * @return
+     */
     @GetMapping("/stream")
     public Flux <String> stream(@RequestParam String message) {
         return openaiService.stream(message);
