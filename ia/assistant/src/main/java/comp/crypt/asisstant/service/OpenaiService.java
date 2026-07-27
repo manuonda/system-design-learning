@@ -17,17 +17,24 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * MessageChatMemoryAdvisor
+ */
+
 @Service
 public class OpenaiService {
 
 
+    private static final String CONVERSATION_ID="manuonda";
 
     @Value("classpath:prompts/system-prompt.st")
     private Resource systemPromptResource;
 
     private final ChatClient chatClient;
+    private final ChatClient chatClientMemoryRepository;
 
-    public OpenaiService(ChatClient.Builder chatClientBuilder) {
+
+    public OpenaiService(ChatClient.Builder chatClientBuilder, ChatClient.Builder chatClientMemoryRepository) {
 
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
@@ -37,6 +44,9 @@ public class OpenaiService {
                                         .build()
                         ).build())
                 .build();
+
+        this.chatClientMemoryRepository = chatClientMemoryRepository
+                .defaultAdvisors()
     }
 
 
