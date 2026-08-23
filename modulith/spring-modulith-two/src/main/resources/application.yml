@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: meetup
+  sql:
+    init:
+      mode: always
+  modulith:
+    events:
+      jdbc:
+        schema-initialization:
+          enabled: true
+      # republica eventos pendientes por error
+      republish-outstanding-events-on-restart: true
+
+
+notifications:
+  fail: false
