@@ -31,7 +31,7 @@ public class OpenaiService {
     private Resource systemPromptResource;
 
     private final ChatClient chatClient;
-    private final ChatClient chatClientMemoryRepository;
+    //private final ChatClient chatClientMemoryRepository;
 
 
     public OpenaiService(ChatClient.Builder chatClientBuilder, ChatClient.Builder chatClientMemoryRepository) {
@@ -45,8 +45,8 @@ public class OpenaiService {
                         ).build())
                 .build();
 
-        this.chatClientMemoryRepository = chatClientMemoryRepository
-                .defaultAdvisors()
+       // this.chatClientMemoryRepository = chatClientMemoryRepository
+       //         .defaultAdvisors();
     }
 
 

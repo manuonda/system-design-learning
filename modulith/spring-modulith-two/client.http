@@ -1,0 +1,10 @@
+
+
+@host= http://localhost:8080
+
+POST  http://localhost:8080/meetups
+Content-Type: application/json
+{
+ "title": "Estudio de Java",
+   "date": "2026-05-15T18:00:00"
+}
