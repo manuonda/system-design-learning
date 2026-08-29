@@ -2,6 +2,9 @@ package com.baeldung.ldp.builder;
 
 import java.time.LocalDate;
 
+/**
+ * Class Task is Builder
+ */
 public class Task {
 
     private Long id;
@@ -14,89 +17,119 @@ public class Task {
     private String project;
     private Double estimatedHours;
 
-    public Task(Long id, String name, String description, LocalDate dueDate,
-            TaskStatus status, Priority priority, String assignee, String project,
-            Double estimatedHours) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.dueDate = dueDate;
-        this.status = status;
-        this.priority = priority;
-        this.assignee = assignee;
-        this.project = project;
-        this.estimatedHours = estimatedHours;
+    public Task(Builder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.description = builder.description;
+        this.dueDate = builder.dueDate;
+        this.status = builder.status;
+        this.priority = builder.priority;
+        this.assignee = builder.assignee;
+        this.project = builder.project;
+        this.estimatedHours = builder.estimatedHours;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public LocalDate getDueDate() {
         return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
     }
 
     public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
-    }
-
     public Priority getPriority() {
         return priority;
-    }
-
-    public void setPriority(Priority priority) {
-        this.priority = priority;
     }
 
     public String getAssignee() {
         return assignee;
     }
 
-    public void setAssignee(String assignee) {
-        this.assignee = assignee;
-    }
-
     public String getProject() {
         return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
     }
 
     public Double getEstimatedHours() {
         return estimatedHours;
     }
 
-    public void setEstimatedHours(Double estimatedHours) {
-        this.estimatedHours = estimatedHours;
+
+    //Caompo nombre es el unico campo obligatorio
+    public static class Builder {
+        private Long id;
+        private final String name;
+        private String description;
+        private LocalDate dueDate;
+        private TaskStatus status = TaskStatus.TO_DO;
+        private Priority priority = Priority.MEDIUM;
+        private String assignee;
+        private String project;
+        private Double estimatedHours;
+
+        public Builder (String name){
+            this.name = name;
+        }
+
+        public Builder id(Long id){
+            this.id = id;
+            return this;
+        }
+
+        public Builder description(String description){
+            this.description = description;
+            return this;
+        }
+
+        public Builder dueDate(LocalDate dueDate){
+            this.dueDate = dueDate;
+            return this;
+        }
+
+        public Builder status(TaskStatus status){
+            this.status = status;
+            return this;
+        }
+
+        public Builder priority(Priority priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        public Builder assignee(String assignee) {
+            this.assignee = assignee;
+            return this;
+        }
+
+        public Builder project(String project) {
+            this.project = project;
+            return this;
+        }
+
+        public Builder estimatedHours(Double estimatedHours) {
+            this.estimatedHours = estimatedHours;
+            return this;
+        }
+
+        public Task build() {
+            return new Task(this);
+        }
+
+        public Task buid() {
+            return new Task(this);
+        }
     }
+
+
 }
