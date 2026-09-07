@@ -8,4 +8,7 @@ public class TaskService {
         this.taskCreator = taskCreator;
     }
 
+    public Task createTask(String name) {
+        return taskCreator.createTask(name);
+    }
 }
