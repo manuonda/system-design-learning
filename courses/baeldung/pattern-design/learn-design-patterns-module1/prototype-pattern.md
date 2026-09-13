@@ -1,0 +1,269 @@
+# Learn Design Patterns — Module 1, Lesson 5: The Prototype Pattern
+
+> Summary notes for `the-prototype-pattern-start` / `the-prototype-pattern-end` (Baeldung "Learn Design Patterns" course).
+> Versión en español: [prototype-pattern.es.md](./prototype-pattern.es.md)
+
+## 1. Overview
+
+The Prototype pattern is a **creational** pattern that solves a specific problem: creating new objects by copying existing ones, without coupling the client to the concrete class being copied.
+
+Modules:
+- Start: `the-prototype-pattern-start`
+- End (reference solution): `the-prototype-pattern-end`
+
+## 2. The Problem: Duplicating Complex Objects
+
+Domain model:
+- `Campaign`: `id`, `name`, `description`, `List<Task> tasks`
+- `Task`: `id`, `name`, `description`, `dueDate`, `status` (`TaskStatus` enum)
+
+The naive `CampaignService.duplicateCampaign()` copies field by field:
+
+```java
+public Campaign duplicateCampaign(Campaign original) {
+    Campaign copy = new Campaign();
+    copy.setName(original.getName());
+    copy.setDescription(original.getDescription());
+    for (Task task : original.getTasks()) {
+        Task taskCopy = new Task();
+        taskCopy.setName(task.getName());
+        taskCopy.setDueDate(task.getDueDate());
+        taskCopy.setStatus(task.getStatus());
+        copy.addTask(taskCopy);
+    }
+    return copy;
+}
+```
+
+Three problems:
+1. **Tight coupling to every field** of `Campaign` and `Task`. Adding a field silently breaks this method — it already has a bug: it doesn't copy each task's `description`.
+2. **No polymorphism support** — if `Task` had subclasses, this method would need type checks/casts to copy correctly.
+3. **Field-by-field copying doesn't scale** — fragile and error-prone as objects grow more complex.
+
+Prototype fixes this by moving the copying responsibility **into the object itself**. The object knows its own fields, so it can copy them reliably. The client just calls `copy()`.
+
+## 3. What Is the Prototype Pattern?
+
+> Lets a client create new objects by copying an existing one, without knowing the concrete class of the object being copied.
+
+### 3.1. Participants (GoF)
+
+| Role | In this example |
+|---|---|
+| **Prototype** | `Prototype<T>` interface — declares `copy()` |
+| **ConcretePrototype** | `Campaign`, `Task` — implement `copy()` via an internal copy constructor |
+| **Client** | code that calls `copy()` without depending on concrete types |
+
+Positioning among creational patterns: **Factory Method** controls *which class* gets instantiated via inheritance; **Prototype** controls *how a copy is made* via delegation to the object itself. The client never needs to know the concrete class — it works entirely through the `Prototype` interface.
+
+> **Naming note:** the method is called `copy()`, not `clone()`, to avoid confusion with Java's `Object.clone()` / `Cloneable`, which are a separate mechanism with known problems. Same GoF concept, a name that fits Java better.
+
+## 4. Implementation
+
+### 4.1. Step 1 — The Copy Constructor
+
+The core mechanism behind the pattern is the **copy constructor**: it takes an instance of the same class and builds a new object with the same state. Living inside the class, it has direct access to all fields — including private ones code outside the class can't reach.
+
+That's the key advantage over the field-by-field approach in Section 2, which is limited to whatever getters/setters expose publicly.
+
+When the client always knows the concrete type, a copy constructor alone is enough. When the client must copy objects **without** knowing their concrete type (e.g., working with a mix of types through a shared interface), we need the decoupling the `Prototype` interface provides.
+
+### 4.2. The `Prototype<T>` Interface
+
+```java
+public interface Prototype<T> {
+    T copy();
+}
+```
+
+The generic type parameter `T` means `copy()` returns the correct type with no casting needed.
+
+### 4.3. `Campaign` as a Prototype
+
+```java
+public class Campaign implements Prototype<Campaign> {
+    private Long id;
+    private String name;
+    private String description;
+    private List<Task> tasks;
+
+    // ... existing constructor, getters, setters ...
+
+    Campaign(Campaign source) {
+        this.name = source.name;
+        this.description = source.description;
+        this.tasks = new ArrayList<>(source.tasks);
+    }
+
+    @Override
+    public Campaign copy() {
+        return new Campaign(this);
+    }
+}
+```
+
+`copy()` delegates to the copy constructor — the client calls `campaign.copy()` and gets a new campaign without knowing how duplication happens. The copy constructor is an implementation detail hidden behind the `Prototype` interface: the constructor handles *how* copying works, the interface defines the contract that *makes it copyable*.
+
+Note the copy constructor deliberately **skips the `id`** — a duplicate is a new entity and should get its own identity (typically assigned by the persistence layer), not inherit the original's.
+
+**Bug:** `new ArrayList<>(source.tasks)` creates a new *list*, but it holds references to the **same** `Task` objects. Both lists share the same `Task` instances — mutating a task in the copy affects the original too. We need a **deep copy** of the task list.
+
+### 4.4. Deep Copy — Making `Task` a Prototype Too
+
+```java
+public class Task implements Prototype<Task> {
+    private Long id;
+    private String name;
+    private String description;
+    private LocalDate dueDate;
+    private TaskStatus status;
+
+    // ... existing constructor, getters, setters ...
+
+    Task(Task source) {
+        this.name = source.name;
+        this.description = source.description;
+        this.dueDate = source.dueDate;
+        this.status = source.status;
+    }
+
+    @Override
+    public Task copy() {
+        return new Task(this);
+    }
+}
+```
+
+`String`, `LocalDate`, and `TaskStatus` (an enum) are all immutable — no deep copy needed there. The deep-copy challenge is specifically about the mutable `List<Task>` inside `Campaign`.
+
+Fix the `Campaign` copy constructor to deep-copy the list:
+
+```java
+Campaign(Campaign source) {
+    this.name = source.name;
+    this.description = source.description;
+    this.tasks = source.tasks.stream()
+            .map(Task::copy)
+            .collect(Collectors.toList());
+}
+```
+
+Each task is copied individually through its own `copy()` — a fully independent copy. Modifications to tasks in the copy no longer affect the original.
+
+`CampaignService` becomes a one-liner:
+
+```java
+public Campaign duplicateCampaign(Campaign original) {
+    return original.copy();
+}
+```
+
+Compare this to the naive approach: the service no longer knows `Campaign`'s fields, doesn't iterate over tasks, and won't need to change if `Campaign`'s structure evolves. New fields on `Campaign`/`Task` only require updating the copy constructors — `CampaignService` stays untouched.
+
+> Note `duplicateCampaign()` still takes a `Campaign` parameter, so the client *does* know the concrete type here. Section 4.6 explains why the `Prototype` interface matters beyond this scenario.
+
+### 4.5. Testing
+
+```java
+class PrototypePatternUnitTest {
+
+    @Test
+    void givenCampaign_whenCopy_thenCopyHasSameData() {
+        Campaign original = new Campaign("Spring Launch", "Q1 campaign");
+        original.addTask(new Task("Write blog post", LocalDate.of(2050, 1, 15), TaskStatus.TO_DO));
+        original.addTask(new Task("Send newsletter", LocalDate.of(2050, 1, 20), TaskStatus.TO_DO));
+
+        Campaign copy = original.copy();
+
+        assertEquals(original.getName(), copy.getName());
+        assertEquals(original.getDescription(), copy.getDescription());
+        assertEquals(original.getTasks().size(), copy.getTasks().size());
+    }
+
+    @Test
+    void givenCopiedCampaign_whenModifyCopyTask_thenOriginalUnchanged() {
+        Campaign original = new Campaign("Spring Launch", "Q1 campaign");
+        original.addTask(new Task("Write blog post", LocalDate.of(2050, 1, 15), TaskStatus.TO_DO));
+
+        Campaign copy = original.copy();
+        copy.getTasks().get(0).setName("Updated task");
+
+        assertEquals("Write blog post", original.getTasks().get(0).getName());
+        assertNotSame(original.getTasks().get(0), copy.getTasks().get(0));
+    }
+}
+```
+
+The second test is the proof deep copy works: `assertNotSame` confirms distinct instances, and the name comparison confirms the original's data is preserved after mutating the copy.
+
+Run: `mvn test`.
+
+### 4.6. The Value of the Interface
+
+In this implementation, `CampaignService` already knows it's working with a `Campaign` — the `Prototype` interface doesn't add decoupling value *yet*. It pays off when a method works with **any copyable object** without knowing what it is:
+
+```java
+public <T> T duplicate(Prototype<T> prototype) {
+    return prototype.copy();
+}
+```
+
+This can duplicate a `Campaign`, a `Task`, or any future `Prototype` implementation, without knowing or caring about the concrete type. That's the decoupling the GoF pattern targets: the client operates entirely through the interface, and new copyable types can be added without touching client code.
+
+The campaign example focuses on the mechanics — defining the interface, implementing `copy()` via a copy constructor, handling deep copies. The pattern's real payoff shows up when these building blocks are used polymorphically, as in the generic method above, or via a **Prototype Registry** (a catalog of pre-configured prototypes looked up and copied by key).
+
+### 4.7. A Note on `Cloneable`
+
+Java has a built-in cloning mechanism: the `java.lang.Cloneable` marker interface plus `Object.clone()`.
+
+- **Pro:** built into the language, no custom interface needed.
+- **Con:** `Object.clone()` does a **shallow copy** by default, so deep copying must be hand-coded. `Cloneable` is a marker interface with no `clone()` method declaration — the method lives on `Object`. The contract is widely considered fragile and error-prone.
+
+Our approach — a custom `Prototype<T>` interface with `copy()` — avoids these problems entirely: type-safe, an explicit contract, and no conflict with `Object.clone()`. Most modern Java projects prefer this over `Cloneable`.
+
+## 5. When to Use / When Not to Use
+
+### Use it when
+- Creating a new object is **expensive or complex**, and an existing object already has most of the desired state (e.g., avoids costly DB queries or computations by duplicating an already-initialized object).
+- The client shouldn't depend on the concrete class of the object being copied — `Prototype` decouples the client from the concrete type hierarchy.
+- The system needs to copy objects whose types are determined **at runtime** — no type checks or casts, just `copy()`.
+- As an alternative to a proliferation of factory subclasses: instead of a parallel `Creator` hierarchy (Factory Method), store prototype instances and copy them when a new object is needed.
+
+### Avoid it when
+- Objects are simple and cheap to construct — the Prototype infrastructure (interface, copy constructors) adds complexity with no real benefit; a plain constructor call is clearer.
+- Objects have **circular references** or deeply nested object graphs — deep copying these is error-prone and can cause subtle bugs.
+- Objects hold external resources (DB connections, file handles) — these generally shouldn't be duplicated.
+- The client already knows the object's class and it's unlikely to change — the decoupling benefit doesn't apply; a direct copy is simpler.
+
+### 5.3. Related Patterns
+
+Worth comparing to **Factory Method**: both decouple the client from concrete types. Factory Method does it via **inheritance** — each subclass decides which class to instantiate. Prototype does it via **delegation** — the client asks an existing object to copy itself.
+
+This matters in practice when the set of concrete types is large: Factory Method needs a creator subclass per type; Prototype just stores instances and copies them on demand.
+
+## 6. Real-World Usage
+
+Jackson's `ObjectMapper` — one of the most widely used classes in the Java ecosystem — supports a `copy()` method that creates a new mapper with the same configuration as the original:
+
+```java
+ObjectMapper base = new ObjectMapper()
+    .enable(SerializationFeature.INDENT_OUTPUT);
+
+ObjectMapper specialized = base.copy()
+    .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+```
+
+Internally, `copy()` delegates to a protected copy constructor — exactly the approach used for `Campaign` here. The caller gets a fully independent copy and can further customize it without affecting the original.
+
+This is a common real-world use case for the prototype concept: start from a carefully configured base object, then spin off specialized variants by copying and tweaking. The alternative — repeating full configuration for every variant — is error-prone and hard to maintain.
+
+## 7. Conclusion
+
+| | Naive field-by-field copy | Prototype pattern |
+|---|---|---|
+| Coupling | Tight — client knows every field | Loose — client calls `copy()` |
+| New fields | Silently breaks copying | Only the copy constructor changes |
+| Polymorphism | Needs type checks/casts | Works transparently via the interface |
+| Deep copy | Manual, per call site | Centralized in each `copy()` |
+
+The copy constructor is `copy()`'s internal mechanism; the pattern itself is the `Prototype` interface that lets clients copy objects without knowing their concrete type. For mutable collections and nested objects, each element must be copied individually to guarantee true independence between original and copy.

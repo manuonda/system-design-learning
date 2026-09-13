@@ -3,22 +3,31 @@ package com.baeldung.ldp.prototype;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Campaign {
+public class Campaign implements Prototype<Campaign> {
 
     private Long id;
     private String name;
     private String description;
     private List<Task> tasks;
 
-    public Campaign() {
-        this.tasks = new ArrayList<>();
-    }
-
     public Campaign(String name, String description) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.tasks = new ArrayList<>();
     }
+
+
+
+    public Campaign(Campaign source) {
+        this.name = source.name;
+        this.description = source.description;
+        this.tasks = source.tasks.stream()
+                .map(Task::copy)
+                .toList();
+    }
+
+
 
     public Long getId() {
         return id;
@@ -54,5 +63,11 @@ public class Campaign {
 
     public void addTask(Task task) {
         this.tasks.add(task);
+    }
+
+
+    @Override
+    public Campaign copy() {
+        return new Campaign(this);
     }
 }
