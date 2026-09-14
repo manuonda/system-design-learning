@@ -189,6 +189,20 @@ Este patrón de bajo nivel no se limita al chat. Spring AI define una interfaz d
 
 En resumen: `ChatModel` es el contrato portable que esconde la API REST de cada proveedor detrás de una única interfaz Java. Trabaja directamente con objetos `Prompt` y `ChatResponse` y no tiene opinión sobre composición de mensajes, valores por defecto ni preocupaciones transversales. Úsalo cuando quieras control total y explícito.
 
+### Aplicado en este proyecto
+
+Esta sección está implementada en `src/main/java/com/example/support_assistant/SupportAssistantServiceLowChatModel.java`. Cada versión anterior del método se dejó comentada justo encima de la activa, de modo que el propio archivo documenta la progresión que sigue el laboratorio:
+
+1. `chatModel.call(query)` — la sobrecarga con `String` plano, la llamada más simple posible.
+2. `chatModel.call(new SystemMessage(...), new UserMessage(query))` — añade una persona/sistema junto a la pregunta del usuario.
+3. La versión actual, activa, va más allá: un `PromptTemplate` rellena la pregunta del usuario, un `SystemMessage` fija la persona, y ambos se envuelven en un `Prompt` junto con `OpenAiChatOptions.builder().model("gpt-5.4-mini").temperature(0.0).build()`, que fija el modelo y hace la respuesta determinista para esa llamada. El método registra en el log el `ChatResponse` completo y devuelve solo el texto generado.
+
+Se expone en su propio endpoint, separado del de `ChatClient` fluido y del de salida estructurada, para que las tres etapas del laboratorio se puedan probar por separado:
+
+```bash
+curl -G "http://localhost:8080/api/v1/chat/low-level" --data-urlencode "query=Tell me about Spring AI"
+```
+
 ## La API fluida recomendada: `ChatClient`
 
 `ChatClient` es la API de alto nivel diseñada para el uso diario. Envuelve un `ChatModel` y añade un builder fluido, de modo que compones un prompt, invocas al modelo y das forma a la respuesta en una única cadena legible.

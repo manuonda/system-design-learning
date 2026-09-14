@@ -1,4 +1,4 @@
-package com.example.support_assistant;
+package com.example.support_assistant.dto;
 
 public enum SupportCategory {
     TECHNICAL,

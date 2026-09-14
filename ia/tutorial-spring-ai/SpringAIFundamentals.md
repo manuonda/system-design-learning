@@ -418,6 +418,21 @@ and
 ChatResponse
 
 objects and has no opinion about message composition, defaults, or cross-cutting concerns. Use it when you want full and explicit control.
+
+Applied in this project
+
+This section is implemented in `src/main/java/com/example/support_assistant/SupportAssistantServiceLowChatModel.java`. Each earlier version of the method is kept as a commented-out block right above the active one, so the file itself documents the progression the lab walks through:
+
+1. `chatModel.call(query)` — the plain string overload, the simplest possible call.
+2. `chatModel.call(new SystemMessage(...), new UserMessage(query))` — adds a system persona next to the user question.
+3. The current, active version goes further: a `PromptTemplate` fills in the user question, a `SystemMessage` sets the persona, and both are wrapped in a `Prompt` together with `OpenAiChatOptions.builder().model("gpt-5.4-mini").temperature(0.0).build()`, which pins the model and makes the answer deterministic for this one call. The method logs the full `ChatResponse` and returns just the generated text.
+
+It is exposed through its own endpoint, kept separate from the fluent and structured-output versions so all three stages stay runnable side by side:
+
+```bash
+curl -G "http://localhost:8080/api/v1/chat/low-level" --data-urlencode "query=Tell me about Spring AI"
+```
+
 The recommended, fluent ChatClient API
 
 ChatClient

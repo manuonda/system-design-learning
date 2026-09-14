@@ -1,4 +1,4 @@
-package com.example.support_assistant;
+package com.example.support_assistant.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
