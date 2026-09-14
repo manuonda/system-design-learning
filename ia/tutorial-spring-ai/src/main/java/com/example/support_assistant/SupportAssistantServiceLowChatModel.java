@@ -90,31 +90,14 @@ public class SupportAssistantServiceLowChatModel {
 
     }
 
-    /**
-     * Ejemplo adicional con el mismo patron de generateResponse (PromptTemplate + Prompt + ChatOptions),
-     * pero con un tema distinto (Pokemon en vez de soporte de Spring), para mostrar que la
-     * plantilla y el contenido del prompt son intercambiables sin tocar el resto del flujo.
-     *
-     * @param query el nombre del Pokemon sobre el que se pide informacion
-     * @return el texto de la respuesta generada por el modelo
-     */
-    String respuestaInformation(String query) {
-        var userPromptTemplate = PromptTemplate.builder()
-                .template("Eres un experto en pokemon, lo cual buscaremos informacion sobre el pokemon {query}")
+    String respuestaInformation(String query ) {
+        var userPrompTemplate =  PromptTemplate.builder()
+                .template("Eres un experto en pokemon , lo cual buscaremos informacion sobre el pokemon {query}")
                 .variables(Map.of("query", query))
                 .build();
 
-        var userMessage = userPromptTemplate.createMessage();
+        var userMessage =  userPrompTemplate.createMessage();
 
-        var prompt = new Prompt(
-                List.of(userMessage),
-                OpenAiChatOptions.builder()
-                        .model("gpt-5.4-mini")
-                        .temperature(0.0)
-                        .build());
-
-        var chatResponse = chatModel.call(prompt);
-        log.info("Chat Response : {}", chatResponse);
-        return chatResponse.getResult().getOutput().getText();
+        var 
     }
 }
