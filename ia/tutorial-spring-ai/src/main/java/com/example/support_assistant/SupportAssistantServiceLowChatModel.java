@@ -98,6 +98,6 @@ public class SupportAssistantServiceLowChatModel {
 
         var userMessage =  userPrompTemplate.createMessage();
 
-        var 
+        var
     }
 }
