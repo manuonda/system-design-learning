@@ -5,10 +5,12 @@ import java.util.List;
 
 /**
  * El adaptador entre 2 mundos
+ * Adapter
  */
 public class TrelloTaskAdapter implements TaskImporter{
 
 
+    //Adaptee
     private final TrelloClient trelloClient;
 
     public TrelloTaskAdapter(TrelloClient trelloClient) {

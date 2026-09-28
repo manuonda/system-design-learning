@@ -2,24 +2,38 @@ package com.baeldung.ldp.adapter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class TrelloClientUnitTest {
 
-    @Test
-    void givenTrelloClient_whenFetchCards_thenReturnsExpectedCards() {
-        TrelloClient client = new TrelloClient();
+    private TaskImporter taskImporter;
 
-        List<TrelloCard> cards = client.fetchCards();
-
-        assertEquals(3, cards.size());
-        assertEquals("card-1", cards.get(0).getCardId());
-        assertEquals("Design homepage", cards.get(0).getName());
-        assertEquals("card-2", cards.get(1).getCardId());
-        assertEquals("Implement login", cards.get(1).getName());
-        assertEquals("card-3", cards.get(2).getCardId());
-        assertEquals("Write tests", cards.get(2).getName());
+    @BeforeEach
+    void setUP(){
+        this.taskImporter = new TrelloTaskAdapter(new TrelloClient());
     }
+
+    /**
+     * Observamos que la prueba se realiza a traves de la interfaz
+     * TaskImporter , no de TrelloTaskAdapter, el codigo
+     * de cliente no necesita conocer los detalles
+     * internos del adaptador
+     */
+    @Test
+    void givenTrelloCardo_whenImportTasks_thenFieldsMappedCorrectly(){
+        List<Task> tasks = this.taskImporter.importTasks();
+
+        Task task = tasks.get(0);
+        assertEquals(task.getTitle(), "Design homepage");
+        assertEquals(task.getDescription(), "Create wireframes for the new homepage");
+        assertEquals(task.getStatus(),TaskStatus.TO_DO);
+
+
+    }
+
+
 }

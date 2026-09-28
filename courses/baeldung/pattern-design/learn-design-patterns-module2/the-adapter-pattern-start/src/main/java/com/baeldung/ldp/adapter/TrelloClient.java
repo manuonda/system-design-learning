@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Clase de una libreria externa(o SDK de Trello), con su propia interfaz
+ * Adaptee
  */
 public class TrelloClient {
 
