@@ -5,9 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Concrete Component: La implemementacion Base
 public class InMemoryTaskRepository implements TaskRepository {
 
     private final Map<Long, Task> store = new HashMap<>();
+
+    public InMemoryTaskRepository() {
+    }
 
     @Override
     public void save(Task task) {
