@@ -7,7 +7,7 @@ import java.util.List;
  * Decorator: Una clase que implementa Component, mantiene una referencia a un
  * component y delete en el mientras agregar comportamiento
  */
-public abstract class CachingTaskRepositoryDecorator  implements
+public class CachingTaskRepositoryDecorator  implements
 TaskRepository {
     private final TaskRepository wrapped;
     private List<Task> cache;
